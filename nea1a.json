@@ -54,7 +54,14 @@
  "fuel_cycle": {
   "grid": [[0, 120]],
   "grid_units": "year",
-  "demand": {
-    },
+  "demands": {
+    "power": {
+      "units": "GWt",
+      "constraints": [
+        ["power", "1.45 * exp(t/10.0)"]
+        ],
+      "facilities": ["reactor"]
+      }
+  }
  }
 }
