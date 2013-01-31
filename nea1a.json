@@ -53,7 +53,7 @@
      }
  },
  "fuel_cycle": {
-     "grid": [[0, 120]],
+     "grid": [0, 120],
      "grid_units": "year",
      "demands": {
 	 "power": {
