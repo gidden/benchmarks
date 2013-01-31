@@ -46,6 +46,15 @@ class CyclusTransformer(object):
         commodity = etree.SubElement(self.xroot, 'commodity')
         commodname = etree.SubElement(commodity, 'name')
         commodname.text = name
+
+        # Add market information
+        market = etree.SubElement(self.xroot,'market')
+        marketname = etree.SubElement(market, 'name')
+        marketname.text = name+'_market'
+        marketcommod = etree.SubElement(market, 'mktcommodity')
+        marketcommod.text = name
+        marketmodel = etree.SubElement(market, 'model')
+        modeltype = etree.SubElement(marketmodel, 'NullMarket')
         
         # Add recipe
         recipe = etree.SubElement(self.xroot, 'recipe')
@@ -85,6 +94,8 @@ class CyclusTransformer(object):
                 return self.rroot.xpath('recipe')[i].findall('isotope')
         raise RecipeError("No recipe named " + name 
                           + " found in " + self.rfile)
+
+    
 
 class RecipeError(Exception):
     """Exception indicating a Recipe wasn't found."""
