@@ -62,7 +62,9 @@ class CyclusTransformer(object):
         constraints = mat['constraints']
         for constraint in constraints:
             if nucname.isnuclide(constraint[0]):
-                self.visit_nuclide(recipe,constraint[0],constraint[1])
+                self.visit_nuclide(recipe,
+                                   nucname.zzaaam(constraint[0]),
+                                   constraint[1])
 
     def visit_stored_recipe(self,name,recipe):
         nodes = self.iso_nodes(name)
