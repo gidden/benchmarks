@@ -1,67 +1,68 @@
 {"materials": {
-  "leu": {
-    "constraints": [
-      ["U235", 0.0495],
-      ["U238", 0.9505],
-      ["O16", 2.0],
-      "id in set(92235, 92238, 8016)", 
-      ["density", 10.2]
-      ], 
-    "parents": []
+    "leu": {
+	"recipe": true,
+	"constraints": [	
+	    ["U235", 0.0495],
+	    ["U238", 0.9505],
+	    ["O16", 2.0],
+	    ["density", 10.2]
+	], 
+	"parents": []
     },
-  "used_leu": {
-    "constraints": [
-      "id == 92235 && x < 0.0495",
-      "id == 92238 && x < 0.9505"
-      ], 
-    "parents": []
+    "nea_spent_pwr_uox": {
+	"recipe": false,
+	"constraints": [
+	    "id == 92235 && x < 0.0495",
+	    "id == 92238 && x < 0.9505"
+	], 
+	"parents": []
     }
-  },
+},
  "facilties": {
-  "reactor": {
-    "attributes": {
-      "thermal_power": ["float", "GWt"],
-      "efficiency": ["float", "percent"],
-      "burnup": ["float", "GWd/tHM"],
-      "storage_time": ["int", "year"],
-      "cooling_time": ["int", "year"],
-      "cycle_length": ["int", "month"],
-      "core_loading": ["double", "kg"],
-      "batch_number": "int",
-      "lifetime": ["int", "year"]
-    },
-    "constraints": [
-      ["thermal_power", 4.25],
-      ["efficiency", 34.1],
-      ["burnup", 60],
-      ["storage_time", 2],
-      ["cooling_time", 5],
-      ["cycle_length", 12],
-      ["core_loading", 78.7],
-      ["nbatches", 3],
-      ["lifetime", 60]
-    ],
-    "inputs": ["leu"],
-    "outputs": ["used_leu"]
-  },
-  "Repository": {
-    "attributes": {},
-    "constraints": [],
-    "inputs": ["used_leu"],
-    "outputs": []
-  }
+     "reactor": {
+	 "attributes": {
+	     "thermal_power": ["float", "GWt"],
+	     "efficiency": ["float", "percent"],
+	     "burnup": ["float", "GWd/tHM"],
+	     "storage_time": ["int", "year"],
+	     "cooling_time": ["int", "year"],
+	     "cycle_length": ["int", "month"],
+	     "core_loading": ["double", "kg"],
+	     "batch_number": "int",
+	     "lifetime": ["int", "year"]
+	 },
+	 "constraints": [
+	     ["thermal_power", 4.25],
+	     ["efficiency", 34.1],
+	     ["burnup", 60],
+	     ["storage_time", 2],
+	     ["cooling_time", 5],
+	     ["cycle_length", 12],
+	     ["core_loading", 78.7],
+	     ["nbatches", 3],
+	     ["lifetime", 60]
+	 ],
+	 "inputs": ["leu"],
+	 "outputs": ["used_leu"]
+     },
+     "Repository": {
+	 "attributes": {},
+	 "constraints": [],
+	 "inputs": ["used_leu"],
+	 "outputs": []
+     }
  },
  "fuel_cycle": {
-  "grid": [[0, 120]],
-  "grid_units": "year",
-  "demands": {
-    "power": {
-      "units": "GWt",
-      "constraints": [
-        ["power", "1.45 * exp(t/10.0)"]
-        ],
-      "facilities": ["reactor"]
-      }
-  }
+     "grid": [[0, 120]],
+     "grid_units": "year",
+     "demands": {
+	 "power": {
+	     "units": "GWt",
+	     "constraints": [
+		 ["power", "1.45 * exp(t/10.0)"]
+             ],
+	     "facilities": ["reactor"]
+	 }
+     }
  }
 }

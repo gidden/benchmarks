@@ -2,132 +2,129 @@
 <!-- A recipe library for output fuel recipes of the NEA benchmark -->
 
 <root>
-  <scenario>
-    <name>1a</name>
-    <recipe>
-      <name>spent_pwr_uox</name>
-      <basis>mass</basis>
+  <recipe>
+    <name>nea_spent_pwr_uox</name>
+    <basis>mass</basis>
 
-      <isotope>
-        <id>92232</id>
-        <comp>2.78E-07</comp>
-      </isotope>
+    <isotope>
+      <id>92232</id>
+      <comp>2.78E-07</comp>
+    </isotope>
 
-      <isotope>
-        <id>92233</id>
-        <comp>3.08E-07</comp>
-      </isotope>
+    <isotope>
+      <id>92233</id>
+      <comp>3.08E-07</comp>
+    </isotope>
 
-      <isotope>
-        <id>92234</id>
-        <comp>1.75E-02</comp>
-      </isotope>
+    <isotope>
+      <id>92234</id>
+      <comp>1.75E-02</comp>
+    </isotope>
 
-      <isotope>
-        <id>92235</id>
-        <comp>7.56E-01</comp>
-      </isotope>
+    <isotope>
+      <id>92235</id>
+      <comp>7.56E-01</comp>
+    </isotope>
 
-      <isotope>
-        <id>92236</id>
-        <comp>6.87E-01</comp>
-      </isotope>
+    <isotope>
+      <id>92236</id>
+      <comp>6.87E-01</comp>
+    </isotope>
 
-      <isotope>
-        <id>92238</id>
-        <comp>9.09E+01</comp>
-      </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>9.09E+01</comp>
+    </isotope>
 
-      <isotope>
-        <id>94236</id>
-        <comp>6.53E-08</comp>
-      </isotope>
+    <isotope>
+      <id>94236</id>
+      <comp>6.53E-08</comp>
+    </isotope>
 
-      <isotope>
-        <id>94238</id>
-        <comp>5.11E-02</comp>
-      </isotope>
+    <isotope>
+      <id>94238</id>
+      <comp>5.11E-02</comp>
+    </isotope>
 
-      <isotope>
-        <id>94239</id>
-        <comp>6.37E-01</comp>
-      </isotope>
+    <isotope>
+      <id>94239</id>
+      <comp>6.37E-01</comp>
+    </isotope>
 
-      <isotope>
-        <id>94240</id>
-        <comp>3.11E-01</comp>
-      </isotope>
+    <isotope>
+      <id>94240</id>
+      <comp>3.11E-01</comp>
+    </isotope>
 
-      <isotope>
-        <id>94241</id>
-        <comp>1.53E-01</comp>
-      </isotope>
+    <isotope>
+      <id>94241</id>
+      <comp>1.53E-01</comp>
+    </isotope>
 
-      <isotope>
-        <id>94242</id>
-        <comp>1.12E-01</comp>
-      </isotope>
+    <isotope>
+      <id>94242</id>
+      <comp>1.12E-01</comp>
+    </isotope>
 
-      <isotope>
-        <id>95241</id>
-        <comp>5.05E-02</comp>
-      </isotope>
+    <isotope>
+      <id>95241</id>
+      <comp>5.05E-02</comp>
+    </isotope>
+<!-- Cyclus currently doesn't support meta stable states
+    <isotope>
+      <id>95242m</id>
+      <comp>1.57E-04</comp>
+    </isotope>
+-->
+    <isotope>
+      <id>95243</id>
+      <comp>2.94E-02</comp>
+    </isotope>
 
-      <isotope>
-        <id>95242m</id>
-        <comp>1.57E-04</comp>
-      </isotope>
+    <isotope>
+      <id>93237</id>
+      <comp>9.16E-02</comp>
+    </isotope>
 
-      <isotope>
-        <id>95243</id>
-        <comp>2.94E-02</comp>
-      </isotope>
+    <isotope>
+      <id>93239</id>
+      <comp>2.52E-08</comp>
+    </isotope>
 
-      <isotope>
-        <id>93237</id>
-        <comp>9.16E-02</comp>
-      </isotope>
+    <isotope>
+      <id>96242</id>
+      <comp>1.89E-06</comp>
+    </isotope>
 
-      <isotope>
-        <id>93239</id>
-        <comp>2.52E-08</comp>
-      </isotope>
+    <isotope>
+      <id>96243</id>
+      <comp>1.89E-04</comp>
+    </isotope>
 
-      <isotope>
-        <id>96242</id>
-        <comp>1.89E-06</comp>
-      </isotope>
+    <isotope>
+      <id>96244</id>
+      <comp>1.21E-02</comp>
+    </isotope>
 
-      <isotope>
-        <id>96243</id>
-        <comp>1.89E-04</comp>
-      </isotope>
+    <isotope>
+      <id>96245</id>
+      <comp>1.05E-03</comp>
+    </isotope>
 
-      <isotope>
-        <id>96244</id>
-        <comp>1.21E-02</comp>
-      </isotope>
+    <isotope>
+      <id>96246</id>
+      <comp>1.46E-04</comp>
+    </isotope>
 
-      <isotope>
-        <id>96245</id>
-        <comp>1.05E-03</comp>
-      </isotope>
+    <isotope>
+      <id>96247</id>
+      <comp>2.87E-06</comp>
+    </isotope>
 
-      <isotope>
-        <id>96246</id>
-        <comp>1.46E-04</comp>
-      </isotope>
+    <isotope>
+      <id>96248</id>
+      <comp>4.90E-07</comp>
+    </isotope>
 
-      <isotope>
-        <id>96247</id>
-        <comp>2.87E-06</comp>
-      </isotope>
-
-      <isotope>
-        <id>96248</id>
-        <comp>4.90E-07</comp>
-      </isotope>
-
-    </recipe>
-  </scenario>
+  </recipe>
 </root>
