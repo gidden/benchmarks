@@ -36,7 +36,25 @@ class CyclusTransformer(object):
             if hasattr(self, methname):
                 meth = getattr(self, methname)
                 meth(value)
-                
+    
+    def visit_fuel_cycle(self,node):
+        self.visit_time_values(node)
+
+    def visit_time_values(self,node):
+        self.add_control_block(get_months(node['grid'],
+                                          node['grid_units']))
+
+    def add_control_block(self,nmonths):
+        control = etree.SubElement(self.xroot,'control')
+        duration = etree.SubElement(control,'duration')
+        duration.text = str(nmonths) 
+        startmonth = etree.SubElement(control,'startmonth')
+        startmonth.text = str(0)
+        startyear = etree.SubElement(control,'startyear')
+        startyear.text = str(0)
+        decay = etree.SubElement(control,'decay')
+        decay.text = str(0)
+        
     def visit_materials(self, node):
         for name, value in node.iteritems():
             self.visit_material(name, value)
@@ -95,7 +113,10 @@ class CyclusTransformer(object):
         raise RecipeError("No recipe named " + name 
                           + " found in " + self.rfile)
 
-    
+def get_months(period,units):
+    span = period[-1] - period[0]
+    factor = 1 if units == 'years' else 12
+    return span * factor
 
 class RecipeError(Exception):
     """Exception indicating a Recipe wasn't found."""
