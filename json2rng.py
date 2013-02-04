@@ -14,10 +14,22 @@ from lxml import etree
 from pyne import nucname
 
 
+class FacilityInput(object):
+    
+    def __init__(self,name,initial_num=0):
+        self.initial_num = initial_num
+        self.name = name
+
+    def __str__(self):
+        s = "name: " + self.name + ", no: " + str(self.initial_num)
+        return s
+
+
 class CyclusTransformer(object):
     """I'm a little teapot."""
     
     def __init__(self, jfile,rfile):
+        self.fac_types = {}
         with open(jfile, 'r') as f:
             self.jroot = json.load(f)
         self.xroot = etree.Element('simulation')
@@ -33,12 +45,29 @@ class CyclusTransformer(object):
             node = self.jroot
         for key, value in node.iteritems():
             methname = 'visit_' + key
+            print "visiting " + key
             if hasattr(self, methname):
                 meth = getattr(self, methname)
                 meth(value)
+        for key,value in self.fac_types.items(): print key, value 
     
     def visit_fuel_cycle(self,node):
         self.visit_time_values(node)
+        self.visit_facilty_set_up(node['initial_facilities'])
+
+    def visit_facilty_set_up(self,node):
+        for item in node:
+            if item in self.fac_types: 
+                self.fac_types[item].initial_num = 1
+            else: 
+                self.fac_types[item] = FacilityInput(item,1)
+        
+    def visit_facilities(self,node):
+        for name, value in node.iteritems():
+            self.visit_facility(name, value)
+
+    def visit_facility(self,name,fac):
+        self.fac_types[name] = FacilityInput(name)
 
     def visit_time_values(self,node):
         self.add_control_block(get_months(node['grid'],
@@ -127,7 +156,7 @@ class RecipeError(Exception):
 
 ct = CyclusTransformer('nea1a.json','nea_recipes.xml')
 ct.visit()
-print ct
+#print ct
 
 # <codecell>
 
