@@ -18,7 +18,7 @@
 	"parents": []
     }
 },
- "facilties": {
+ "facilities": {
      "reactor": {
 	 "attributes": {
 	     "thermal_power": ["float", "GWt"],
@@ -55,6 +55,7 @@
  "fuel_cycle": {
      "grid": [0, 120],
      "grid_units": "year",
+     "initial_facilities" : ["Repository"],
      "demands": {
 	 "power": {
 	     "units": "GWt",
