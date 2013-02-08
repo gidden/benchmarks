@@ -14,6 +14,20 @@ from lxml import etree
 from pyne import nucname
 
 
+class Demand(object):
+    """defines a demand type for the simulation, e.g. power"""
+    def __init__(self,name,units):
+        self.name = name
+        self.units = units
+        self.fac_types = []
+        self.sections = []
+
+class DemandSection(object):
+    """defines a section of demand, for any non-piecewise functions,
+    there will only be one 'demand section'"""
+    def __init__(self,jnode):
+        self.
+
 class FacilityInput(object):
     
     def __init__(self,name,initial_num=0):
@@ -30,6 +44,7 @@ class CyclusTransformer(object):
     
     def __init__(self, jfile,rfile):
         self.fac_types = {}
+        self.demand_tyes = []
         with open(jfile, 'r') as f:
             self.jroot = json.load(f)
         self.xroot = etree.Element('simulation')
@@ -49,12 +64,17 @@ class CyclusTransformer(object):
             if hasattr(self, methname):
                 meth = getattr(self, methname)
                 meth(value)
-        for key,value in self.fac_types.items(): print key, value 
+        # for key,value in self.fac_types.items(): print key, value 
+        region = self.add_region(self.xroot)
+        model = etree.SubElement(region,"model")
+        regtype = etree.SubElement(model,"GrowthRegion")
+        self.add_demand(regtype)
+        self.add_inst(region)
     
     def visit_fuel_cycle(self,node):
         self.visit_time_values(node)
         self.visit_facilty_set_up(node['initial_facilities'])
-
+ 
     def visit_facilty_set_up(self,node):
         for item in node:
             if item in self.fac_types: 
@@ -68,6 +88,54 @@ class CyclusTransformer(object):
 
     def visit_facility(self,name,fac):
         self.fac_types[name] = FacilityInput(name)
+
+    def add_demand(self,regtype):
+        for demand in self.demand_types:
+            commod = etree.SubElement(regtype,"commodity")
+            name = etree.SubElement(commod,"name")
+            name.text = demand.name
+            for section in demand.sections:
+                demand_node = etree.SubElement(commod,"demand")
+                ftype = etree.SubElement(demand_node,"type")
+                ftype.text = section.function_type
+                params = etree.SubElement(demand_node,"parameters")
+                params.text = section.params
+                start = etree.SubElement(demand_node,"start_time")
+                start.text = section.start
+        
+
+    def add_region(self,node):
+        region = etree.SubElement(node,"region")
+        name = etree.SubElement(region,"name")
+        name.text = "region"
+        facilities = [k for k,v in self.fac_types.items()]
+        for facility in facilities:
+            allowed_fac = etree.SubElement(region,"allowedfacility")
+            allowed_fac.text = facility
+        
+        return region
+
+    def add_inst(self,node):
+        inst = etree.SubElement(node,"institution")
+        name = etree.SubElement(inst,"name")
+        name.text = "inst"
+        initial_list = etree.SubElement(inst,"initialfacilitylist")
+        facility_info = [v for k,v in self.fac_types.items()]
+        for facility in facility_info:
+            self.add_prototype(inst,facility.name)
+            self.add_initial_fac(initial_list,facility)
+
+    def add_prototype(self,node,name):
+        avail_prototype = etree.SubElement(node,"available_prototype")
+        avail_prototype.text = name
+
+    def add_initial_fac(self,node,facility):
+        if facility.initial_num > 0:
+            entry = etree.SubElement(node,"entry")
+            prototype = etree.SubElement(entry,"prototype")
+            prototype.text = facility.name
+            number = etree.SubElement(entry,"number")
+            number.text = str(facility.initial_num)
 
     def visit_time_values(self,node):
         self.add_control_block(get_months(node['grid'],
@@ -156,7 +224,7 @@ class RecipeError(Exception):
 
 ct = CyclusTransformer('nea1a.json','nea_recipes.xml')
 ct.visit()
-#print ct
+print ct
 
 # <codecell>
 
