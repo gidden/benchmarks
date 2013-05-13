@@ -8,6 +8,13 @@ specifications and recipes into Cyclus input files.
 Specification Format
 --------------------
 
+The fuel cycle simulation benchmark input specification format is described in
+detail below. The specification is split into three sections: materials,
+describing the materials to be used in the simulation; facilities, describing
+the facilities that will act in the simulation; and fuel cycle, describing the
+behavior of the fuel cycle during the simulation (e.g., when certain types of
+facilities become available). 
+
 Materials
 +++++++++
 
@@ -36,10 +43,10 @@ We define the materials specification as follows: ::
       	 * suggestedComposition (optional)
            * isotope1
            * isotope2
+         * parents (optional)
        * constraints
        	 * constraint1
        	 * constraint2...
-       * parents (optional)
      * material2...
 
 This specifications covers both cases described above. If a material is
@@ -62,29 +69,33 @@ well as the constraints of their parents.
 Two example of specified materials are provided below ::
 
   {"materials": {
-    "leu": {
-      "attributes": {
-        "recipe": true
+      "leu": {
+          "attributes": {
+              "recipe": true
+          }
+          "constraints": [      
+              ["U235", 0.0495],
+              ["U238", 0.9505],
+              ["O16", 2.0],
+              ["density", 10.2]
+          ]
+      },
+      "spent_pwr_uox": {
+          "attributes": {
+              "recipe": false,
+              "suggestedComposition": [
+                  ["U235",0.01],
+                  ...
+              ]
+          }
+          "constraints": [
+              "id == 92235 && x < 0.0495",
+              "id == 92238 && x < 0.9505",
+              "density < 10.2"
+          ]
       }
-      "constraints": [      
-          ["U235", 0.0495],
-          ["U238", 0.9505],
-          ["O16", 2.0],
-          ["density", 10.2]
-      ]
-    },
-    "spent_pwr_uox": {
-      "attributes": {
-        "recipe": false,
-        "suggestedComposition": [
-         ["U235",0.01],
-         ...
-	]
-      }
-      "constraints": [
-          "id == 92235 && x < 0.0495",
-          "id == 92238 && x < 0.9505",
-          "density < 10.2"
-      ]
-    }
   }
+
+Facilities
+++++++++++
+
