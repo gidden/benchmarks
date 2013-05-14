@@ -1,8 +1,54 @@
+from pyne import nucname
+from lxml import etree
 
-#class JsonVisitor():
+class CyclusMaterial(object):
+    """ simple holding class for materials in cyclus input. underlying
+    representation is in xml.
+    """
+    def __init__(self,name,node):
+        self.name = name
+        self.node = node
 
-def json_to_xml(json_str,indent=0):
-    return "hi"
+class JsonMaterialParser(object):
+    def __init__(self,json_materials):
+        self.__json_rep = json_materials
 
-def xml_to_json(xml_str,indent=0):
-    return "hi"
+    def __check_recipe(self,description):
+        return description["attributes"]["recipe"] == "true"
+
+    def __basis(self,description):
+        if "basis" in description["attributes"]:
+            return description["attributes"]["basis"]
+        else:
+            return "mass"
+
+    def __add_recipe(self,constraints,root):
+        for constraint in constraints:
+            if nucname.isnuclide(constraint[0]):
+                eliso = etree.SubElement(root,"isotope")
+                elid = etree.SubElement(eliso,"id")
+                elid.text = str(nucname.zzaaam(constraint[0]))
+                elval = etree.SubElement(eliso,"comp")
+                elval.text = str(constraint[1])
+
+    def __construct_xml_tree(name,description,root):
+        elname = etree.SubElement(root,"name")
+        elname.text = name
+        elbasis = etree.SubElement(root,"basis")
+        elbasis.text = __basis(description)
+        if (__check_recipe(description)):
+            __add_recipe(description["constraints"],root)
+
+    def parse(self):
+        """ Takes as input a python dictionary of materials as specified in the
+        benchmark specification language. returns a list of translated
+        CyclusMaterials.
+        """
+        materials = []
+        for name, description in __json_rep.iteritems():
+            # matl name, description
+            root = etree.Element("recipe")
+            construct_xml_tree(name, description, root)
+            materials.append(CyclusMaterial(name,root))
+        return materials
+

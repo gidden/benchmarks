@@ -1,5 +1,5 @@
 # local 
-from matl_translate import json_to_xml, xml_to_json
+from matl_translate import json_to_cyclus
 
 # json/xml packages
 try:
@@ -15,7 +15,9 @@ def test_translation():
     name,ntopes,xml_isotopes,json_isotopes,values = setup_constants()
     xml_node = setup_xml(name,ntopes,xml_isotopes,values)
     json_node = setup_json(name,ntopes,json_isotopes,values)
-    assert_equal(xml_node,json_to_xml(json_node))
+    materials = json_to_cyclus(json_node)
+    assert_equal(xml_node,materials[0].node)
+    # don't need to perform xml to json xform (yet)
     #assert_equal(json_str,xml_to_json(xml_str))
 
 def setup_xml(name,ntopes,isotopes,values):
@@ -40,10 +42,9 @@ def setup_json(name,ntopes,isotopes,values):
                "attributes":{"recipe":"true"},\
                "constraints":jisotopes\
           }}
-    return json.dumps(obj, indent = 4 * ' ')
+    return obj
 
 def setup_constants():
-    #constants
     name = "a_name"
     ntopes = 2
     xml_isotopes = ["92235", "92238"]
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     name,ntopes,xml_isotopes,json_isotopes,values = \
         setup_constants()
     xml_node = setup_xml(name,ntopes,xml_isotopes,values)
-    json_node = setup_json(name,ntopes,json_isotopes,values)
-    print etree.tostring(xml_node)
-    print json_node
-    
+    json_obj = setup_json(name,ntopes,json_isotopes,values)
+#    print etree.tostring(xml_node)
+#    print json.dumps(json_obj, indent = 4 * ' ')
+    json_to_cyclus(json_obj)
