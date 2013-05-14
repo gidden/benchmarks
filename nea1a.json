@@ -20,7 +20,6 @@
 },
  "facilities": {
      "reactor": {
-     	 "type":"lwr",
 	 "attributes": {
 	     "thermal_power": ["float", "GWt"],
 	     "efficiency": ["float", "percent"],
@@ -46,7 +45,7 @@
 	 "inputs": ["leu"],
 	 "outputs": ["used_leu"]
      },
-     "repository": {
+     "Repository": {
 	 "attributes": {},
 	 "constraints": [],
 	 "inputs": ["used_leu"],
@@ -56,13 +55,12 @@
  "fuel_cycle": {
      "grid": [0, 120],
      "grid_units": "year",
-     "initial_facilities" : ["repository"],
+     "initial_facilities" : ["Repository"],
      "demands": {
 	 "power": {
 	     "units": "GWt",
-	     "grid": [0,120]
 	     "constraints": [
-		 ["1.45 * exp(t/10.0)"]
+		 ["power", "1.45 * exp(t/10.0)"]
              ],
 	     "facilities": ["reactor"]
 	 }
