@@ -1,5 +1,5 @@
 # local 
-from matl_translate import JsonMaterialParser
+from matl_translate import JsonMaterialParser, CompositionError
 
 # json/xml packages
 try:
@@ -9,16 +9,29 @@ except ImportError:
 from lxml import etree
 
 # test packages
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_raises
 
 def test_recipe_translation():
     name,ntopes,xml_isotopes,json_isotopes,values = setup_constants()
     xml_node = setup_xml(name,ntopes,xml_isotopes,values)
-    parser = JsonMaterialParser(setup_json(name,ntopes,json_isotopes,values))
+    parser = \
+        JsonMaterialParser(setup_json_rec(name,ntopes,json_isotopes,values))
     materials = parser.parse()
     assert_equal(etree.tostring(xml_node),etree.tostring(materials[0].node))
-    # don't need to perform xml to json xform (yet)
-    #assert_equal(json_str,xml_to_json(xml_str))
+
+def test_nonrecipe_translation():
+    name,ntopes,xml_isotopes,json_isotopes,values = setup_constants()
+    xml_node = setup_xml(name,ntopes,xml_isotopes,values)
+    parser = \
+        JsonMaterialParser(setup_json_non(name,ntopes,json_isotopes,values))
+    materials = parser.parse()
+    assert_equal(etree.tostring(xml_node),etree.tostring(materials[0].node))
+
+def test_raises():
+    parser = \
+        JsonMaterialParser(setup_json_throw())
+    with assert_raises(CompositionError):
+        parser.parse()
 
 def setup_xml(name,ntopes,isotopes,values):
     root = etree.Element("recipe")
@@ -34,13 +47,30 @@ def setup_xml(name,ntopes,isotopes,values):
         elval.text = str(values[i])
     return root
 
-def setup_json(name,ntopes,isotopes,values):
+def setup_json_rec(name,ntopes,isotopes,values):
     jisotopes = []
     for i in range(ntopes):
         jisotopes.append([isotopes[i],values[i]])
     obj = {name:{\
                "attributes":{"recipe":"true"},\
                "constraints":jisotopes\
+          }}
+    return obj
+
+def setup_json_non(name,ntopes,isotopes,values):
+    jisotopes = []
+    for i in range(ntopes):
+        jisotopes.append([isotopes[i],values[i]])
+    obj = {name:{\
+               "attributes":{"recipe":"false","suggestedComposition":jisotopes},\
+               "constraints":[]\
+          }}
+    return obj
+
+def setup_json_throw():
+    obj = {"some_name":{\
+               "attributes":{"recipe":"false"},\
+               "constraints":[]\
           }}
     return obj
 
