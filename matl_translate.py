@@ -31,13 +31,13 @@ class JsonMaterialParser(object):
                 elval = etree.SubElement(eliso,"comp")
                 elval.text = str(constraint[1])
 
-    def __construct_xml_tree(name,description,root):
+    def __construct_xml_tree(self,name,description,root):
         elname = etree.SubElement(root,"name")
         elname.text = name
         elbasis = etree.SubElement(root,"basis")
-        elbasis.text = __basis(description)
-        if (__check_recipe(description)):
-            __add_recipe(description["constraints"],root)
+        elbasis.text = self.__basis(description)
+        if (self.__check_recipe(description)):
+            self.__add_recipe(description["constraints"],root)
 
     def parse(self):
         """ Takes as input a python dictionary of materials as specified in the
@@ -45,10 +45,10 @@ class JsonMaterialParser(object):
         CyclusMaterials.
         """
         materials = []
-        for name, description in __json_rep.iteritems():
+        for name, description in self.__json_rep.iteritems():
             # matl name, description
             root = etree.Element("recipe")
-            construct_xml_tree(name, description, root)
-            materials.append(CyclusMaterial(name,root))
+            self.__construct_xml_tree(name, description, root)
+            materials.append(CyclusMaterial(name, root))
         return materials
 
