@@ -66,9 +66,9 @@ The parents field allows for related materials to be specified in a more compact
 manner. Any child materials incorporate both their prescriped constraints as
 well as the constraints of their parents. 
 
-Two example of specified materials are provided below ::
+Two examples of the material specification implemented in JSON are provided
+below ::
 
-  {"materials": {
       "leu": {
           "attributes": {
               "recipe": true
@@ -94,7 +94,6 @@ Two example of specified materials are provided below ::
               "density < 10.2"
           ]
       }
-  }
 
 Facilities
 ++++++++++
@@ -140,12 +139,13 @@ blanket.
 We define the reactor specification as follows: ::
 
    * reactorName1
+     * type: reactor
      * attributes
        * thermalPower: units
        * efficiency: units
        * cycleLegth: units
        * batches: units
-       * lifetime: units
+       * lifetime: {units | distributed} 
        * fuels:
 	 * fuel1
 	   * coreLoading: units
@@ -158,7 +158,7 @@ We define the reactor specification as follows: ::
        * efficiency: value
        * cycleLegth: value
        * batches: value
-       * lifetime: value
+       * lifetime: {value | distributed}
        * fuels:
 	 * fuel1
 	   * coreLoading: value
@@ -174,6 +174,61 @@ In this specification, the units member is a pair of values stating the data
 type and units, for example::
 
   thermalPower: float, GWd/tHM
+
+The lifetime member allows for one of two types of values. If specific units and
+a value are given, then all facilities of the given class are assigned a
+specific lifetime. If it instead flagged as a distribution, facility lifetimes
+are inferred from the Fuel Cycle demand section. This is required of the
+specification for now due to the method by which previous benchmarks have been
+defined (i.e., defining a "facility life distribution curve" rather than
+defining a demand for certain facilities -- see [BOUCHER07]_).
+
+.. Anthony, can you advise here (yea, nay)?
+
+An example of the specification implemented in JSON is shown below: ::
+
+     "lwr_reactor": {
+     	 "type":"reactor",
+	 "attributes": {
+	     "thermalPower": ["float", "GWt"],
+	     "efficiency": ["float", "percent"],
+	     "cycleLength": ["int", "month"],
+	     "batches": ["int",None],
+	     "lifetime": ["int", "year"],
+	     "fuels": {
+	         "leu": {
+	     	     "coreLoading": ["float", "kg"],
+		     "burnup": ["float", "GWd/tHM"],
+	     	     "storageTime": ["int", "year"],
+	     	     "coolingTime": ["int", "year"],
+		 }
+	     }
+	 },
+	 "constraints": [
+	     ["thermal_power", 4.25],
+	     ["efficiency", 34.1],
+	     ["cycle_length", 12],
+	     ["core_loading", 78.7],
+	     ["nbatches", 3],
+	     ["lifetime", 60],
+	     "fuels": {
+	         "leu": {
+	     	     ["coreLoading", 78.7],
+	     	     ["burnup", 60],
+	     	     ["storageTime", 2],
+	     	     ["coolingTime", 5],
+		 }
+	     }
+	 ],
+	 "inputs": ["leu"],
+	 "outputs": ["used_leu"]
+     }
+
+.. Anthony, can you confirm that the reason we use dictionaries above is that we
+   have multiple entries per "key" versus below where it is known that we'll
+   only have one entry per "key"? I'm curious because of the "fuels" data
+   structure I've introduced
+
 
 Repositories
 ~~~~~~~~~~~~
@@ -193,3 +248,86 @@ a repository is specified as follows: ::
      * inputMaterials
    * repositoryName2...
 
+An example of the minimal specification implemented in JSON is shown below: ::
+
+     "lwr_repository": {
+     	 "type":"repository",
+	 "inputs": ["leu"]
+      }
+
+Reprocessing
+~~~~~~~~~~~~
+
+Reprocessing plants are generally used in a simulation to recycle certain
+elemental groups to be reused as fuel, separating valuable, fissile isotopes
+(and their elemental family), from neutron poison isotopes. Accordingly,
+reprocessing plants must specify some number of elemental families and a
+corresponding separation efficiency. Furthermore, the facility is defined by a
+processing capacity and the temporal nature of the separations process is
+captured in a processing time member. A reprocessing facility is specified as
+follows: ::
+
+   * reprocessingName1
+     * attributes
+       * capacityType: units
+       * lifetime: units
+       * separationClasses:
+         * class1:
+	   * efficiency: units
+	 * class2...
+     * constriants
+       * capacityType: value
+       * lifetime: value
+       * separationClasses:
+         * class1:
+	   * efficiency: value
+	   * constitutents: values
+	 * class2...
+     * inputMaterials
+     * outputMaterials
+   * repositoryName2...
+
+.. Anthony, can you advise on how the separationClasses structure fits with your
+   ideas here.. I'm still reallly struggling to understand when to use
+   dictionaries and lists and when to declare things in the attributes section
+   and when to declare them in constraints
+
+Advanced Fabrication
+~~~~~~~~~~~~~~~~~~~~
+
+Fabrication of advanced fuels, i.e., those using some amount of recycled
+material is required to model advanced fuel cycles. These fabrication facilities
+generally take some set of input separated elements and a filling fertile
+material (e.g. natural or depleted uranium), and output one or more advanced
+fuel types. The decision making algorithm of how much of each constituent to
+send to the facility and how to construct a given fuel type is generally
+simulation-engine specific. One can, however, specify connections and capacities
+as has been done in prior sections. An advanced fabrication facility is
+specified as follows: ::
+
+   * fabricatorName1
+     * attributes
+       * capacities
+         * capacityType1: units
+         * capacityType2: units
+	 * ...
+       * lifetime: units
+     * constriants
+       * capacities
+         * capacityType1: value
+         * capacityType2: value
+	 * ...
+       * lifetime: value
+     * inputMaterials
+     * outputMaterials
+   * fabricatorName2...
+
+Fuel Cycle
+++++++++++
+
+Citations
+---------
+
+.. [BOUCHER07] L. BOUCHER, “Specification for the Benchmark Devoted to Scenario
+   Codes,” Tech. Rep. NEA/NSC/DOC(2007)13/REV1, OECD, Nuclear Energy Agency
+   (Mar. 2008).
