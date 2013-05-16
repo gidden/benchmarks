@@ -14,24 +14,23 @@ from nose.tools import assert_equal, assert_raises
 def test_recipe_translation():
     name,ntopes,xml_isotopes,json_isotopes,values = setup_constants()
     xml_node = setup_xml(name,ntopes,xml_isotopes,values)
-    parser = \
-        JsonMaterialParser(setup_json_rec(name,ntopes,json_isotopes,values))
-    materials = parser.parse()
-    assert_equal(etree.tostring(xml_node),etree.tostring(materials[0].node))
+    name, description = setup_json_rec(name,ntopes,json_isotopes,values)
+    parser = JsonMaterialParser(name, description)
+    material = parser.parse()
+    assert_equal(etree.tostring(xml_node),etree.tostring(material.node))
 
 def test_nonrecipe_translation():
     name,ntopes,xml_isotopes,json_isotopes,values = setup_constants()
     xml_node = setup_xml(name,ntopes,xml_isotopes,values)
-    parser = \
-        JsonMaterialParser(setup_json_non(name,ntopes,json_isotopes,values))
-    materials = parser.parse()
-    assert_equal(etree.tostring(xml_node),etree.tostring(materials[0].node))
+    name, description = setup_json_non(name,ntopes,json_isotopes,values)
+    parser = JsonMaterialParser(name, description)
+    material = parser.parse()
+    assert_equal(etree.tostring(xml_node),etree.tostring(material.node))
 
 def test_raises():
-    parser = \
-        JsonMaterialParser(setup_json_throw())
-    with assert_raises(CompositionError):
-        parser.parse()
+    name, description = setup_json_throw()
+    parser = JsonMaterialParser(name, description)
+    assert_raises(CompositionError,parser.parse)
 
 def setup_xml(name,ntopes,isotopes,values):
     root = etree.Element("recipe")
@@ -55,7 +54,7 @@ def setup_json_rec(name,ntopes,isotopes,values):
                "attributes":{"recipe":"true"},\
                "constraints":jisotopes\
           }}
-    return obj
+    return name, obj[name]
 
 def setup_json_non(name,ntopes,isotopes,values):
     jisotopes = []
@@ -65,14 +64,15 @@ def setup_json_non(name,ntopes,isotopes,values):
                "attributes":{"recipe":"false","suggestedComposition":jisotopes},\
                "constraints":[]\
           }}
-    return obj
+    return name, obj[name]
 
 def setup_json_throw():
-    obj = {"some_name":{\
-               "attributes":{"recipe":"false"},\
-               "constraints":[]\
+    name = "some_name"
+    obj = {name:{\
+            "attributes":{"recipe":"false"},\
+            "constraints":[]\
           }}
-    return obj
+    return name, obj[name]
 
 def setup_constants():
     name = "a_name"

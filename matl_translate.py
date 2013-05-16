@@ -1,7 +1,7 @@
 from pyne import nucname
 from lxml import etree
 
-class CompositionError(Exception):
+class CompositionError(Exception): 
     """Exception indicating a composition wasn't found."""
     pass
 
@@ -14,8 +14,13 @@ class CyclusMaterial(object):
         self.node = node
 
 class JsonMaterialParser(object):
-    def __init__(self,json_materials):
-        self.__json_rep = json_materials
+    """ A parser that accepts a python-based json object representation of
+    materials from the FCS benchmark specification language and returns a
+    cyclus-based representation of the material
+    """
+    def __init__(self, name, description):
+        self.__name = name
+        self.__description = description
 
     def __check_recipe(self,description):
         return description["attributes"]["recipe"] == "true"
@@ -55,16 +60,12 @@ class JsonMaterialParser(object):
         benchmark specification language. returns a list of translated
         CyclusMaterials.
         """
-        materials = []
-        for name, description in self.__json_rep.iteritems():
-            # matl name, description
-            root = etree.Element("recipe")
-            try:
-                self.__construct_xml_tree(name, description, root)
-            except: 
-                raise CompositionError("No composition (recipe or "+
-                                       "suggestedComposition) could be found "+
-                                       "in " + name)
-            materials.append(CyclusMaterial(name, root))
-        return materials
+        root = etree.Element("recipe")
+        try:
+            self.__construct_xml_tree(self.__name, self.__description, root)
+        except: 
+            raise CompositionError("No composition (recipe or "+
+                                   "suggestedComposition) could be found "+
+                                   "in " + self.__name)
+        return CyclusMaterial(self.__name, root)
 
