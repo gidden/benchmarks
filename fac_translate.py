@@ -24,22 +24,66 @@ class JsonFacilityParser(object):
     representation of a reactor.
     """
     def __init__(self, name, description):
-        self.__name = name
-        self.__description = description
+        self._name = name
+        self._description = description
 
-    def __getProduction(self):
+    def _getProduction(self):
         """returns 0 by default, subclasses can override"""
         return 0.0
 
-    def __getNode(self):
+    def _getNode(self):
         """returns None by default, subclasses can override"""
         return None
 
     def parse(self):
-        fac_t = self.__description["type"]
-        imports = self.__description["inputs"]
-        exports = self.__description["outputs"]
-        production = self.__getProduction()
-        node = self.__getNode()
-        return CyclusFacility(self.__name,fac_t,imports,exports,production,node)
+        fac_t = self._description["type"]
+        imports = self._description["inputs"]
+        exports = self._description["outputs"]
+        production = self._getProduction()
+        node = self._getNode()
+        return CyclusFacility(self._name,fac_t,imports,exports,production,node)
+
+class JsonRepositoryParser(JsonFacilityParser):
+    """ A parser that accepts a python-based json object representation of
+    repositories from the FCS benchmark specification language and returns a
+    cyclus-based representation of the facility.
+
+    Repositories have no notion of "production", so only the node formation
+    functionality is overwritten.
+    """
+    def _getNode(self):
+        # initialize parameters
+        inputs = self._description["inputs"]
+        if "lifetime" in self._description["constraints"]:
+            lifetime = self._description["constraints"]["lifetime"]
+        else:
+            lifetime = None
+        if "capacity" in self._description["constraints"]:
+            capacity = self._description["constraints"]["capacity"]
+        else:
+            capacity = None
+        
+        return self.__constructNode(inputs,lifetime,capacity)
+
+    def __constructNode(self,inputs,lifetime,capacity):
+        root = etree.Element("facility")
+        elname = etree.SubElement(root,"name")
+        elname.text = self._name
+        if lifetime is not None:
+            ellife = etree.SubElement(root,"lifetime")
+            ellife.text = str(lifetime)    
+        elmodel = etree.SubElement(root,"model")
+        elclass = etree.SubElement(elmodel,"SinkFacility")
+        elin = etree.SubElement(elclass,"input")
+        elcommods = etree.SubElement(elin,"commodities")
+        for i in range(len(inputs)):
+            elincommod = etree.SubElement(elcommods,"incommodity")
+            elincommod.text = inputs[i]
+        if capacity is not None:
+            elcapacity = etree.SubElement(elin,"input_capacity")
+            elcapacity.text = str(capacity)
+        for i in range(len(inputs)):
+            elincommod = etree.SubElement(root,"incommodity")
+            elincommod.text = inputs[i]
+        return root
 

@@ -1,6 +1,6 @@
 # includes ---------------------------------------------------------------------
 # local 
-from fac_translate import JsonFacilityParser
+from fac_translate import JsonFacilityParser, JsonRepositoryParser
 
 # json/xml packages
 try:
@@ -10,7 +10,22 @@ except ImportError:
 from lxml import etree
 
 # test packages
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_almost_equal, assert_raises
+import pprint
+# ------------------------------------------------------------------------------
+
+# mock objects -----------------------------------------------------------------
+class MockFacilityParser(JsonFacilityParser):
+    def __init__(self, name, description, value, text):
+        JsonFacilityParser.__init__(self, name, description)
+        self.value = value
+        self.text = text
+
+    def _getProduction(self):
+        return self.value
+
+    def _getNode(self):
+        return etree.Element(self.text)
 # ------------------------------------------------------------------------------
 
 # setting up parameters --------------------------------------------------------
@@ -36,6 +51,28 @@ def setup_derived(fac_t,imports,exports,parameters):
     desc["attributes"] = attributes
     desc["constraints"] = constraints
     return desc
+
+def setup_repo_xml(name,inputs,capacity=None,lifetime=None):
+    root = etree.Element("facility")
+    elname = etree.SubElement(root,"name")
+    if lifetime is not None:
+        ellife = etree.SubElement(root,"lifetime")
+        ellife.text = str(lifetime)
+    elname.text = name
+    elmodel = etree.SubElement(root,"model")
+    elclass = etree.SubElement(elmodel,"SinkFacility")
+    elin = etree.SubElement(elclass,"input")
+    elcommods = etree.SubElement(elin,"commodities")
+    for i in range(len(inputs)):
+        elincommod = etree.SubElement(elcommods,"incommodity")
+        elincommod.text = inputs[i]
+    if capacity is not None:
+        elcapacity = etree.SubElement(elin,"input_capacity")
+        elcapacity.text = str(capacity)
+    for i in range(len(inputs)):
+        elincommod = etree.SubElement(root,"incommodity")
+        elincommod.text = inputs[i]
+    return root
 # ------------------------------------------------------------------------------
 
 # checking parameters (guts of testing) ----------------------------------------
@@ -46,7 +83,7 @@ def check_base(fac,name,fac_t,imports,exports):
     assert_equal(exports,fac.exports)
 
 def check_only_derived(fac,production,node):
-    assert_equal(production,fac.production)
+    assert_almost_equal(production,fac.production)
     assert_equal(etree.tostring(node),etree.tostring(fac.node))
 
 def check_derived(fac,name,fac_t,imports,exports,production,node):
@@ -66,14 +103,35 @@ def test_base():
     assert_equal(default_prod,fac.production)
     assert_equal(default_node,fac.node)
 
-def test_repo():
-    name, fac_t, inputs = "repo", "repository", ["lwr_waste","hwr_waste"]
-    defualt_exports = []
-    default_production = 0.0
-    parameters = [("lifetime",["int","year"],60)]
-    node = setup_repo_xml(name,fac_t,inputs)
-    description = setup_derived(fac_t,imports,default_exports,parameters)
-    parser = JsonFacilityParser(name,description)
+def test_derived():
+    value, text = 1.5, "test"
+    node = etree.Element(text)
+    name, fac_t, imports, exports = "aname", "atype", ["a","b"], ["c","d"]
+    description = setup_base(fac_t,imports,exports)
+    mock = MockFacilityParser(name,description,value,text)
+    fac = mock.parse()
+    check_derived(fac,name,fac_t,imports,exports,value,node)
+
+def do_repotest(name,fac_t,imports,exports,production,capacity,lifetime):
+    node = setup_repo_xml(name,imports,capacity=capacity,lifetime=lifetime)
+    parameters = []
+    if capacity is not None:
+        parameters.append(("capacity",["double","tHM"],capacity))
+    if lifetime is not None:
+        parameters.append(("lifetime",["int","year"],lifetime))
+    description = setup_derived(fac_t,imports,exports,parameters)
+    parser = JsonRepositoryParser(name,description)
     fac = parser.parse()
-    check_derived(fac,name,fac_t,imports,default_exports,default_production,node)
+    check_derived(fac,name,fac_t,imports,exports,production,node)
+    
+def test_repo():
+    name, fac_t, imports = "repo", "repository", ["lwr_waste","hwr_waste"]
+    exports = []
+    production = 0.0
+    lifetime = 60
+    capacity = 5e10
+    do_repotest(name,fac_t,imports,exports,production,None,None)
+    do_repotest(name,fac_t,imports,exports,production,capacity,None)
+    do_repotest(name,fac_t,imports,exports,production,None,lifetime)
+    do_repotest(name,fac_t,imports,exports,production,capacity,lifetime)
 # ------------------------------------------------------------------------------
