@@ -1,6 +1,8 @@
 # includes ---------------------------------------------------------------------
 # local 
 from fac_translate import JsonFacilityParser, JsonRepositoryParser
+from rxtr_helpers import ReactorFuels, ReactorSchedule, \
+    ReactorProduction, ReactorGenerator
 
 # json/xml packages
 try:
@@ -134,4 +136,27 @@ def test_repo():
     do_repotest(name,fac_t,imports,exports,production,capacity,None)
     do_repotest(name,fac_t,imports,exports,production,None,lifetime)
     do_repotest(name,fac_t,imports,exports,production,capacity,lifetime)
+
+def test_rxtr():
+    name, fac_t, imports, exports = "rxtr", "reactor", ["leu"], ["spent"]
+    inrecipes, outrecipes = ["leu_rec"], ["50gwd"]
+    in_core, out_core, batches, burnup = 5e6, 4.9e6, 3, 50
+    cycle, refuel, lifetime, storage, cooling = 10, 2, 480, 100, 200
+    prod_t, capacity, eff = "power", 1000.0, 0.33
+    fuels = ReactorFuels(imports,inrecipes,in_core,
+                         exports,outrecipes,out_core,batches,burnup)
+    schedule = ReactorSchedule(cycle,refuel,lifetime,storage,cooling)
+    production = ReactorProduction(prod_t,capacity,eff)
+    generator = ReactorGenerator(name,fac_t,fuels,schedule,production)
+    node = generator.node()
+    description = setup_derived(fac_t,imports,exports,generator.parameters())
+
+    print "\n" + etree.tostring(node, pretty_print = True)
+    pp = pprint.PrettyPrinter(depth=6)
+    pp.pprint(description)
+
+    parser = JsonReactorParser(name,description)
+    fac = parser.parse()
+    check_derived(fac,name,fac_t,imports,exports,production,node)
+
 # ------------------------------------------------------------------------------
