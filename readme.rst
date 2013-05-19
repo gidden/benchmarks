@@ -239,19 +239,28 @@ fidelity can be provided by asserting a limit on the quantity or quality
 a repository is specified as follows: ::
 
    * repositoryName1
+     * type: repository
      * attributes
-       * capacityType: units
+       * capacity: units
        * lifetime: units
      * constriants
-       * capacityType: value
+       * capacity: value
        * lifetime: value
      * inputMaterials
    * repositoryName2...
 
-An example of the minimal specification implemented in JSON is shown below: ::
+An example of a specification implemented in JSON is shown below: ::
 
      "lwr_repository": {
      	 "type":"repository",
+	 "attributes": {
+	     "lifetime": ["int", "year"], 
+	     "capacity": ["double", "tHM"]
+	 }
+	 "constraints": {
+	     "lifetime": 60, 
+             "capacity": 50000000000.0
+	 }, 
 	 "inputs": ["leu"]
       }
 
