@@ -255,13 +255,13 @@ An example of a specification implemented in JSON is shown below: ::
      	 "type":"repository",
 	 "attributes": {
 	     "lifetime": ["int", "year"], 
-	     "capacity": ["double", "tHM"]
+	     "capacity": ["double", "tHM/year"]
 	 }
 	 "constraints": {
 	     "lifetime": 60, 
-             "capacity": 50000000000.0
+             "capacity": 800.0
 	 }, 
-	 "inputs": ["leu"]
+	 "inputs": ["used_leu"]
       }
 
 Reprocessing
