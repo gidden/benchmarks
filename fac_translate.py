@@ -1,4 +1,6 @@
 from lxml import etree
+from rxtr_helpers import ReactorFuels, ReactorSchedule, \
+    ReactorProduction, ReactorGenerator
 
 class CyclusFacility(object):
     """ simple holding class for facilities in cyclus input. underlying
@@ -47,9 +49,6 @@ class JsonRepositoryParser(JsonFacilityParser):
     """ A parser that accepts a python-based json object representation of
     repositories from the FCS benchmark specification language and returns a
     cyclus-based representation of the facility.
-
-    Repositories have no notion of "production", so only the node formation
-    functionality is overwritten.
     """
     def _getNode(self):
         # initialize parameters
@@ -64,6 +63,13 @@ class JsonRepositoryParser(JsonFacilityParser):
             capacity = None
         
         return self.__constructNode(inputs,lifetime,capacity)
+
+    def _getProduction(self):
+        """returns 0 by default, subclasses can override"""        
+        if "capacity" in self._description["constraints"]:
+            return self._description["constraints"]["capacity"]
+        else:
+            return 0.0
 
     def __constructNode(self,inputs,lifetime,capacity):
         root = etree.Element("facility")
@@ -86,4 +92,49 @@ class JsonRepositoryParser(JsonFacilityParser):
             elincommod = etree.SubElement(root,"incommodity")
             elincommod.text = inputs[i]
         return root
+
+
+class JsonReactorParser(JsonFacilityParser):
+    """ A parser that accepts a python-based json object representation of
+    reactors from the FCS benchmark specification language and returns a
+    cyclus-based representation of the facility.
+    """
+    def __init__(self, name, description, recipeGuide, refuel_time = 0, prod_t = None):
+        JsonFacilityParser.__init__(self,name,description)
+        self._recipeGuide = recipeGuide
+        self._refuel_time = refuel_time
+        self._prod_t = prod_t
+
+    def _getProduction(self):
+        eff = float(self._description["constraints"]["efficiency"])
+        power = eff * float(self._description["constraints"]["thermal_power"])
+        return power
+    
+    def _getNode(self):
+        # get fuels
+        imports = self._description["inputs"]
+        exports = self._description["outputs"]
+        inrecipes = [self._recipeGuide[import_mat] for import_mat in imports]
+        outrecipes = [self._recipeGuide[export_mat] for export_mat in exports]
+        in_core = float(self._description["constraints"]["core_loading"])
+        out_core = in_core
+        batches = int(self._description["constraints"]["batch_number"])
+        burnup = float(self._description["constraints"]["burnup"])        
+        fuels = ReactorFuels(imports,inrecipes,in_core,
+                             exports,outrecipes,out_core,batches,burnup)
+        
+        cycle = int(self._description["constraints"]["cycle_length"])
+        lifetime = int(self._description["constraints"]["lifetime"])
+        storage = int(self._description["constraints"]["storage_time"])
+        cooling = int(self._description["constraints"]["cooling_time"])
+        schedule = ReactorSchedule(cycle,self._refuel_time,lifetime,storage,cooling)
+        
+        eff = float(self._description["constraints"]["efficiency"])
+        capacity = eff * float(self._description["constraints"]["thermal_power"])
+        if self._prod_t is None:
+            self._prod_t = "power"
+        production = ReactorProduction(self._prod_t,capacity,eff)
+        fac_t = self._description["type"]
+        generator = ReactorGenerator(self._name,fac_t,fuels,schedule,production)
+        return generator.node()
 

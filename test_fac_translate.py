@@ -1,6 +1,7 @@
 # includes ---------------------------------------------------------------------
 # local 
-from fac_translate import JsonFacilityParser, JsonRepositoryParser
+from fac_translate import JsonFacilityParser, JsonRepositoryParser, \
+    JsonReactorParser
 from rxtr_helpers import ReactorFuels, ReactorSchedule, \
     ReactorProduction, ReactorGenerator
 
@@ -102,7 +103,7 @@ def test_base():
     parser = JsonFacilityParser(name,description)
     fac = parser.parse()
     check_base(fac,name,fac_t,imports,exports)
-    assert_equal(default_prod,fac.production)
+    assert_almost_equal(default_prod,fac.production)
     assert_equal(default_node,fac.node)
 
 def test_derived():
@@ -114,35 +115,39 @@ def test_derived():
     fac = mock.parse()
     check_derived(fac,name,fac_t,imports,exports,value,node)
 
-def do_repotest(name,fac_t,imports,exports,production,capacity,lifetime):
+def do_repotest(name,fac_t,imports,exports,capacity,lifetime):
     node = setup_repo_xml(name,imports,capacity=capacity,lifetime=lifetime)
     parameters = []
     if capacity is not None:
         parameters.append(("capacity",["double","tHM"],capacity))
+    else:
+        capacity = 0.0 # repos have capacity = production, cant check None == 0.0
     if lifetime is not None:
         parameters.append(("lifetime",["int","year"],lifetime))
     description = setup_derived(fac_t,imports,exports,parameters)
     parser = JsonRepositoryParser(name,description)
     fac = parser.parse()
-    check_derived(fac,name,fac_t,imports,exports,production,node)
+    check_derived(fac,name,fac_t,imports,exports,capacity,node)
     
 def test_repo():
     name, fac_t, imports = "repo", "repository", ["lwr_waste","hwr_waste"]
     exports = []
-    production = 0.0
     lifetime = 60
     capacity = 5e10
-    do_repotest(name,fac_t,imports,exports,production,None,None)
-    do_repotest(name,fac_t,imports,exports,production,capacity,None)
-    do_repotest(name,fac_t,imports,exports,production,None,lifetime)
-    do_repotest(name,fac_t,imports,exports,production,capacity,lifetime)
+    do_repotest(name,fac_t,imports,exports,None,None)
+    do_repotest(name,fac_t,imports,exports,capacity,None)
+    do_repotest(name,fac_t,imports,exports,None,lifetime)
+    do_repotest(name,fac_t,imports,exports,capacity,lifetime)
 
 def test_rxtr():
     name, fac_t, imports, exports = "rxtr", "reactor", ["leu"], ["spent"]
     inrecipes, outrecipes = ["leu_rec"], ["50gwd"]
-    in_core, out_core, batches, burnup = 5e6, 4.9e6, 3, 50
-    cycle, refuel, lifetime, storage, cooling = 10, 2, 480, 100, 200
-    prod_t, capacity, eff = "power", 1000.0, 0.33
+    in_core, batches, burnup = 5e6, 3, 50
+    out_core = in_core #specification only supports incore = outcore
+    cycle, lifetime, storage, cooling = 10, 480, 100, 200
+    refuel = 0 #specification doesn't support refuel delay
+    prod_t, thermal_power, eff = "power", 1000.0, 0.33
+    capacity = thermal_power * eff
     fuels = ReactorFuels(imports,inrecipes,in_core,
                          exports,outrecipes,out_core,batches,burnup)
     schedule = ReactorSchedule(cycle,refuel,lifetime,storage,cooling)
@@ -151,12 +156,14 @@ def test_rxtr():
     node = generator.node()
     description = setup_derived(fac_t,imports,exports,generator.parameters())
 
-    print "\n" + etree.tostring(node, pretty_print = True)
-    pp = pprint.PrettyPrinter(depth=6)
-    pp.pprint(description)
-
-    parser = JsonReactorParser(name,description)
+    # need to get a recipeGuide
+    recipeGuide = {}
+    for i in range(len(inrecipes)):
+        recipeGuide[imports[i]] = inrecipes[i]
+    for i in range(len(outrecipes)):
+        recipeGuide[exports[i]] = outrecipes[i]
+    parser = JsonReactorParser(name,description,recipeGuide)
     fac = parser.parse()
-    check_derived(fac,name,fac_t,imports,exports,production,node)
+    check_derived(fac,name,fac_t,imports,exports,capacity,node)
 
 # ------------------------------------------------------------------------------
