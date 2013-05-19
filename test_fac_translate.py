@@ -1,7 +1,7 @@
 # includes ---------------------------------------------------------------------
 # local 
 from fac_translate import JsonFacilityParser, JsonRepositoryParser, \
-    JsonReactorParser
+    JsonReactorParser, CyclusReactorInfo
 from rxtr_helpers import ReactorFuels, ReactorSchedule, \
     ReactorProduction, ReactorGenerator
 
@@ -162,7 +162,8 @@ def test_rxtr():
         recipeGuide[imports[i]] = inrecipes[i]
     for i in range(len(outrecipes)):
         recipeGuide[exports[i]] = outrecipes[i]
-    parser = JsonReactorParser(name,description,recipeGuide)
+    info = CyclusReactorInfo(recipeGuide)
+    parser = JsonReactorParser(name,description,info)
     fac = parser.parse()
     check_derived(fac,name,fac_t,imports,exports,capacity,node)
 

@@ -93,17 +93,30 @@ class JsonRepositoryParser(JsonFacilityParser):
             elincommod.text = inputs[i]
         return root
 
+class CyclusReactorInfo(object):
+    """ a simple holding class for non-specification related information that is
+    still required by Cyclus to define its input
+    """
+    def __init__(self, recipeGuide,refuel_time = 0, prod_t = None): 
+        self.recipeGuide = recipeGuide
+        self.refuel_time = refuel_time
+        self.prod_t = prod_t
 
 class JsonReactorParser(JsonFacilityParser):
     """ A parser that accepts a python-based json object representation of
     reactors from the FCS benchmark specification language and returns a
     cyclus-based representation of the facility.
     """
-    def __init__(self, name, description, recipeGuide, refuel_time = 0, prod_t = None):
+    def __init__(self, name, description, extra_info):
+        """ Reactor Parser constructor. Note that the additional argument
+        provides an interface to the additional information required to make a
+        Cyclus reactor object that is not needed to specify a reactor object in
+        the specification language.
+        """
         JsonFacilityParser.__init__(self,name,description)
-        self._recipeGuide = recipeGuide
-        self._refuel_time = refuel_time
-        self._prod_t = prod_t
+        self._recipeGuide = extra_info.recipeGuide
+        self._refuel_time = extra_info.refuel_time
+        self._prod_t = extra_info.prod_t
 
     def _getProduction(self):
         eff = float(self._description["constraints"]["efficiency"])
