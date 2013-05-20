@@ -13,20 +13,28 @@ detail below. The specification is split into three sections: materials,
 describing the materials to be used in the simulation; facilities, describing
 the facilities that will act in the simulation; and fuel cycle, describing the
 behavior of the fuel cycle during the simulation (e.g., when certain types of
-facilities become available). 
+facilities become available). Each section includes an optional metadata
+structure. The purpose of this structure is to provide additional information,
+including simulator-specific information. A classic example is that of fuel
+assembly geometry, described in [BOUCHER07]_, which could be included in the
+metadata of a reactor facility. In general, we try to prescribe to the examples
+laid forth in other specification languages in computational nuclear science
+(e.g. [MATTOON12]_). We are additionally guided by this work when arbitrary
+decisions must be made, e.g., using camelCase instead of other ways to write
+compound_words.
 
 Materials
 +++++++++
 
 A 'materials specification' defines the isotopic makeup of material in a fuel
 cycle simulation. For the purposes of benchmarks, isotopic definitions generally
-come in two flavors: predescribed recipes or process-defined isotopic vectors. A
+come in two flavors: prescribed recipes or process-defined isotopic vectors. A
 predefined recipes is straightforward, and an example of this is unirradiated
 uranium. Natural uranium's isotopics are well known (within deviations in
-natural abundancies), and the enrichment process can be modeled with simple
+natural abundances), and the enrichment process can be modeled with simple
 analytical equations. Accordingly, precise isotopic recipes can be provided for
 such materials. During and after irradiation, however, complex physical models
-are required to obtain precies isotopic compositions; the current best practice
+are required to obtain precise isotopic compositions; the current best practice
 for the majority of models is to perform such calculations offline (i.e., not
 within a simulation). Accordingly, certain factual statements can be made based
 on domain-level knowledge to place restrictions or constraints on a defined
@@ -37,6 +45,7 @@ We define the materials specification as follows: ::
 
    * materials
      * materialName1
+       * metadata (optional)
        * attributes
       	 * recipe
            * true/false
@@ -63,7 +72,7 @@ define the material. Density, or any other material property, is specified in
 the constraints section. 
 
 The parents field allows for related materials to be specified in a more compact
-manner. Any child materials incorporate both their prescriped constraints as
+manner. Any child materials incorporate both their prescribed constraints as
 well as the constraints of their parents. 
 
 Two examples of the material specification implemented in JSON are provided
@@ -139,7 +148,8 @@ blanket.
 We define the reactor specification as follows: ::
 
    * reactorName1
-     * type: reactor
+     * metadata (optional)
+       * type: reactor
      * attributes
        * thermalPower: units
        * efficiency: units
@@ -153,7 +163,7 @@ We define the reactor specification as follows: ::
 	   * coolingTime: units
 	   * storageTime: units
 	 * fuel2... (optional)
-     * constriants
+     * constraints
        * thermalPower: value
        * efficiency: value
        * cycleLegth: value
@@ -188,7 +198,9 @@ defining a demand for certain facilities -- see [BOUCHER07]_).
 An example of the specification implemented in JSON is shown below: ::
 
      "lwr_reactor": {
-     	 "type":"reactor",
+     	 "metadata: {
+	     "type":"reactor"
+	 }
 	 "attributes": {
 	     "thermalPower": ["float", "GWt"],
 	     "efficiency": ["float", "percent"],
@@ -235,15 +247,16 @@ Repositories
 
 Repositories serve mostly as sinks for certain types of materials. Additional
 fidelity can be provided by asserting a limit on the quantity or quality
-(e.g. radiotoxicity or thermal heatload) of the entering materials. Accordingly,
+(e.g. radiotoxicity or thermal heat load) of the entering materials. Accordingly,
 a repository is specified as follows: ::
 
    * repositoryName1
-     * type: repository
+     * metadata (optional)
+       * type: repository
      * attributes
        * capacity: units
        * lifetime: units
-     * constriants
+     * constraints
        * capacity: value
        * lifetime: value
      * inputMaterials
@@ -252,7 +265,9 @@ a repository is specified as follows: ::
 An example of a specification implemented in JSON is shown below: ::
 
      "lwr_repository": {
-     	 "type":"repository",
+     	 "metadata: {
+	     "type":"repository"
+	 }
 	 "attributes": {
 	     "lifetime": ["int", "year"], 
 	     "capacity": ["double", "tHM/year"]
@@ -277,6 +292,7 @@ captured in a processing time member. A reprocessing facility is specified as
 follows: ::
 
    * reprocessingName1
+     * metadata (optional)
      * attributes
        * capacityType: units
        * lifetime: units
@@ -284,7 +300,7 @@ follows: ::
          * class1:
 	   * efficiency: units
 	 * class2...
-     * constriants
+     * constraints
        * capacityType: value
        * lifetime: value
        * separationClasses:
@@ -315,13 +331,14 @@ as has been done in prior sections. An advanced fabrication facility is
 specified as follows: ::
 
    * fabricatorName1
+     * metadata (optional)
      * attributes
        * capacities
          * capacityType1: units
          * capacityType2: units
 	 * ...
        * lifetime: units
-     * constriants
+     * constraints
        * capacities
          * capacityType1: value
          * capacityType2: value
@@ -334,9 +351,92 @@ specified as follows: ::
 Fuel Cycle
 ++++++++++
 
+A 'fuel cycle specification' defines the basic progression and facility
+availability of a simulation. These parameters include the time period to be
+simulated, the initial condition of the simulation, the growth of facilities
+(i.e., the demand for such facilities), and the technological availability of
+certain advanced facilities.
+
+We define the fuel cycle specification as follows: ::
+  
+  * fuelCycle
+    * metadata (optional)
+    * attributes
+      * grid: units
+      * initialConditions:
+	* facility1: number
+	* facility2...
+      * demands:
+	* demand1: units, facilities
+	* demand2...
+    * constraints
+      * grid: value
+      * demands:
+        * demand1: 
+          * grid: value
+	  * growth: description
+        * demand2...
+
+In general, the attributes and constraints of the fuelCycle data structure are
+pretty straightforward. Inclusive time periods as described as grids,
+e.g. [0,100] describes a time period between 0 and 100 in a given unit. Facility
+growth curves are described via demand data structures. Demand data structures
+contain two state attributes, their units and the facilities that meet the given
+demand. They are constrained by the time periods over which they span and the
+description of their growth. Growth descriptors essentially describe piece-wise
+functions. An example of a a linear piece-wise growth descriptor is specified as
+follows: ::
+  
+  * growth:
+    * type: linear
+    * period: 
+      * startTime: value
+      * startValue: value (optional)
+      * slope: value
+
+The period structure describes each piece-wise section of the growth function. A
+starting value can be supplied if required.
+
+An example implementation of the fuel cycle specification in JSON is given
+below::
+
+ "fuelCycle": {
+     "attributes": {
+         "grid": "year",
+	 "initialConditions": {
+	     "repository": 1,
+	 },
+	 "demands": {
+	     "power": ["GWe", ["lwrReactor"]]
+	 }
+     }
+     "constraints": {
+         "grid": [0, 120],
+         "demands": {
+	     "power": {
+	         "grid": [0,120],
+	         "growth": {
+		     "type": "linear",
+		     "period": {
+		         "startTime": 0,
+		         "startValue": 1000,
+	                 "slope": 500
+		     }
+                 }
+	     }
+	 }
+     }
+ }
+
 Citations
 ---------
 
 .. [BOUCHER07] L. BOUCHER, “Specification for the Benchmark Devoted to Scenario
-   Codes,” Tech. Rep. NEA/NSC/DOC(2007)13/REV1, OECD, Nuclear Energy Agency
-   (Mar. 2008).
+	       Codes,” Tech. Rep. NEA/NSC/DOC(2007)13/REV1, OECD, Nuclear Energy
+	       Agency (Mar. 2008).
+
+.. [MATTOON12] C. M. MATTOON, B. R. BECK, N. R. PATEL, N. C. SUM-
+	       MERS, G. W. HEDSTROM, and D. A. BROWN, “Gener- alized Nuclear
+	       Data: A New Structure (with Supporting Infrastructure) for
+	       Handling Nuclear Data,” Nuclear Data Sheets, 113, 12, 3145 – 3171
+	       (2012).
