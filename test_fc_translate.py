@@ -1,22 +1,13 @@
 # local 
 import fc_translate as xlate
 import fc_testing_tools as tools
+import compare_xml_trees as cxt
 
 # xml packages
 from lxml import etree
 
 # test packages
 from nose.tools import assert_equal, assert_raises, assert_true
-
-def compare(s, t):
-    """compare unordered sets, e.g. lists of xml nodes"""
-    t = list(t)   # make a mutable copy
-    try:
-        for elem in s:
-            t.remove(elem)
-    except ValueError:
-        return False
-    return not t
 
 def runtests(time_vars, initial_facs, growth_params):
     # helpers
@@ -41,29 +32,13 @@ def runtests(time_vars, initial_facs, growth_params):
 
     # expected
     info_xml = info_helper.get_xml()
-    #print "\n" + etree.tostring(info_xml, pretty_print = True)
-    ics = ic_helper.get_xml() #initial_facs
-    # for ic in ics:
-    #     print "\n" + etree.tostring(ic, pretty_print = True)
+    ics = ic_helper.get_xml()
     growth = growth_helper.get_xml()
-    # for g in growth:
-    #     print "\n" + etree.tostring(g, pretty_print = True)
     
     # tests
-    assert_equal(etree.tostring(info_xml), etree.tostring(fc.info))
-
-    ics_strings, fc_strings = [], []
-    for i in range(len(ics)):
-        ics_strings.append(etree.tostring(ics[i]))
-        fc_strings.append(etree.tostring(fc.initial_conditions[i]))
-    assert_true(compare(ics_strings,fc_strings))
-
-    # for key, nodes in growth.iteritems():
-    #     growth_strings, fc_strings = [], []
-    #     for i in range(len(nodes)):
-    #         growth_strings.append(etree.tostring(growth[key][i]))
-    #         fc_strings.append(etree.tostring(fc.growth[key][i]))
-    #     assert_true(compare(growth_strings,fc_strings))
+    assert_true(cxt.compare_nodes(info_xml, fc.info))
+    assert_true(cxt.compare_nodes(ics, fc.initial_conditions))
+    assert_true(cxt.compare_nodes(growth, fc.growth))
     producers = {param.name: param.facilities for param in growth_params}
     assert_equal(producers,fc.producers)
 
@@ -74,9 +49,8 @@ def default_ics_vars():
     return [tools.TestFCFac("rxtr",1,"reactor","BatchReactor")]
 
 def default_growth_vars():
-    # return [tools.TestFCGrowth("powa", "GWe", ["rxtr"], [1,120], \
-    #                               ['linear',[0,500]])]
-    return {}
+    return [tools.TestFCGrowth("powa", "GWe", ["rxtr"], [1,120], \
+                                   ['linear',[0,500]])]
 
 def test_default():
     runtests(default_time_vars(), default_ics_vars(), default_growth_vars())
@@ -102,3 +76,4 @@ def test_growth():
     repo = tools.TestFCGrowth("space", "tHM", ["repo1"], [1,120], \
                                   ['linear',[50,0,500],[100,0,1000]])
     runtests(default_time_vars(), default_ics_vars(), [rxtr,repo])
+

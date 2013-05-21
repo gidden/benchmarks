@@ -24,6 +24,10 @@ class ExtraneousFCInfo(object):
         # add additional objects to this interface as needed
         self.fac_type_map = fac_type_map
 
+class SupportError(Exception):
+    """Error for unsupported operations"""
+    pass
+
 class JsonFuelCycleParser(object):
     """ A parser that accepts a python-based json object representation of
     the fuel cycle from the FCS benchmark specification language and returns a
@@ -90,29 +94,57 @@ class JsonFuelCycleParser(object):
         return root
 
     def __constructInitialCondition(self):
-        """Constructs a list of initial condition entries"""
-        init_facs = []
-        fac_type_map = self.__extra_info.fac_type_map
+        """Constructs the xml structure of initial condition entries"""
+        root = None
         if "initialConditions" in self.__description["attributes"]:
             initial_conditions = \
                 self.__description["attributes"]["initialConditions"]
+            root = etree.Element("initialfacilitylist")
+            fac_type_map = self.__extra_info.fac_type_map
             for name, amount in initial_conditions.iteritems():
                 fac_t = fac_type_map[name]
-                root = etree.Element("entry")
-                prototype = etree.SubElement(root,"prototype")
+                entry = etree.SubElement(root,"entry")
+                prototype = etree.SubElement(entry,"prototype")
                 prototype.text = self.__default_agent_types[fac_t]
-                number = etree.SubElement(root,"number")
+                number = etree.SubElement(entry,"number")
                 number.text = str(amount)
-                init_facs.append(root)
-        return init_facs
+        return root
+
+    def __addGrowthNode(self,root,dem_t,values):
+        """Constructs a single demand node
+        """
+        demand = etree.SubElement(root,"demand")
+        eltype = etree.SubElement(demand,"type")
+        eltype.text = dem_t
+        params = etree.SubElement(demand,"parameters")
+        params.text = str(values["slope"]) 
+        if "startValue" in values:
+            params.text +=  " " +str(values["startValue"])
+        else:
+            params.text += " 0"
+        time = etree.SubElement(demand,"start_time")
+        time.text = str(values["startTime"])
 
     def __constructGrowth(self):
-        """Constructs a list of growth curve information"""
-        demands = {}
-        return demands
+        """Constructs a GrowthRegion xml node of growth curve information"""
+        root = etree.Element("GrowthRegion")
+        dic = self.__description["constraints"]["demands"]
+        for key in dic.iterkeys():
+            if dic[key]["growth"]["type"] is not "linear":
+                raise SupportError("Only linear functions currently supported")
+            commod = etree.SubElement(root,"commodity")
+            name = etree.SubElement(commod,"name")
+            name.text = key
+            n = len(dic[key]["growth"]) - 1
+            for i in range(n):
+                name = "period" + str(i+1)
+                self.__addGrowthNode(commod,"linear",dic[key]["growth"][name])
+        return root
 
     def __constructProducers(self):
-        """Constructs a list of growth curve information"""
+        """Constructs a dictionary of commodities and which facilities produce
+        that commodity
+        """
         params = self.__description["attributes"]["demands"]
         producers = {key: value[1] for key, value in params.iteritems()}
         return producers

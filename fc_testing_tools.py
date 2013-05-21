@@ -66,15 +66,16 @@ class InitialConditions(object):
         
         
     def get_xml(self):
-        xml_ics = []
+        root = None
+        if len(self.fac_list) > 0:
+            root = etree.Element("initialfacilitylist")
         for fac in self.fac_list:
-            root = etree.Element("entry")
-            prototype = etree.SubElement(root,"prototype")
+            entry = etree.SubElement(root,"entry")
+            prototype = etree.SubElement(entry,"prototype")
             prototype.text = fac.agent_t
-            number = etree.SubElement(root,"number")
+            number = etree.SubElement(entry,"number")
             number.text = str(fac.number)
-            xml_ics.append(root)
-        return xml_ics
+        return root
 
 class TestFCGrowth(object):
     """A holder class for testing demand curves. It holds all the information
@@ -125,16 +126,16 @@ class Growth(object):
         params.text = text
 
     def get_xml(self):
-        xml_growth = {}
-        lvl = 0
+        root = None
+        if len(self.params) > 0:
+            root = etree.Element("GrowthRegion")
         for demand in self.params:
-            key = demand.name
-            node_list = []
+            commod = etree.SubElement(root,"commodity")
+            name = etree.SubElement(commod,"name")
+            name.text = demand.name
             for i in range(len(demand.demand_info)-1):
-                node = etree.Element("demand")
+                node = etree.SubElement(commod,"demand")
                 eltype = etree.SubElement(node,"type")
                 eltype.text = demand.demand_info[0]
                 self.__add_growth_xml(node,demand.demand_info[i+1])
-                node_list.append(node)
-            xml_growth[key] = node_list
-        return xml_growth
+        return root
