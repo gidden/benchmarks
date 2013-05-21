@@ -1,108 +1,79 @@
 # local 
-from fc_translate import JsonFuelCycleParser
+import fc_translate as xlate
+import fc_testing_tools as tools
 
-# json/xml packages
-try:
-    import simplejson as json
-except ImportError:
-    import json
+# xml packages
 from lxml import etree
 
 # test packages
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_raises, assert_true
 
+def compare(s, t):
+    """compare unordered sets, e.g. lists of xml nodes"""
+    t = list(t)   # make a mutable copy
+    try:
+        for elem in s:
+            t.remove(elem)
+    except ValueError:
+        return False
+    return not t
 
- # "fuelCycle": {
- #     "attributes": {
- #         "grid": "year",
- #         "initialConditions": {
- #             "repository": 1,
- #         },
- #         "demands": {
- #             "power": ["GWe", ["lwrReactor"]]
- #         }
- #     }
- #     "constraints": {
- #         "grid": [0, 120],
- #         "demands": {
- #             "power": {
- #                 "grid": [0,120],
- #                 "growth": {
- #        	     "type": "linear",
- #        	     "period": {
- #        	         "startTime": 0,
- #        	         "startValue": 1000,
- #                         "slope": 500
- #        	     }
- #                 }
- #             }
- #         }
- #     }
- # }
-
-def fill_info(attr, units, constrs, time):
-    attr["grid"] = units
-    constrs["grid"] = time
-
-def get_description(time_units, time):
-    obj = {}
-    obj["attributes"] = {}
-    obj["constraints"] = {}
-    fill_info(obj["attributes"],time_units,obj["constraints"],time)
-    return obj
-
-def get_info_xml(time_units,time):
-    diff = time[1] - time[0]
-    if time_units is "years":
-        diff *= 12
-    root = etree.Element("control")
-    duration = etree.SubElement(root,"duration")
-    duration.text = str(diff)
-    startmonth = etree.SubElement(root,"startmonth")
-    startmonth.text = "1" # default starting month
-    startyear = etree.SubElement(root,"startyear")
-    startyear.text = "2000" # default starting year
-    simstart = etree.SubElement(root,"simstart")
-    simstart.text = "0" # default starting time period
-    decay = etree.SubElement(root,"decay")
-    decay.text = "2" # default decay switch
-    return root
-
-def runtests(time_vars):
-    # variables
-    time_units = time_vars[0]
-    time = time_vars[1]
+def runtests(time_vars, initial_facs):
+    # helpers
+    info_helper = tools.SimInfo(time_vars)
+    ic_helper = tools.InitialConditions(initial_facs)
+    
+    # json object construction
+    description = {"attributes":{}, "constraints":{}}
+    info_helper.add_to_description(description)
+    ic_helper.add_to_description(description)
 
     # observed
-    description = get_description(time_units,time)
-    parser = JsonFuelCycleParser(description)
+    fac_types = {}
+    for fac in initial_facs:
+        fac_types[fac.name] = fac.fac_t
+    extra_info = xlate.ExtraneousFCInfo(fac_types)
+    parser = xlate.JsonFuelCycleParser(description, extra_info)
     fc = parser.parse()
 
     # expected
-    info_xml = get_info_xml(time_units,time)
+    info_xml = info_helper.get_xml()
     #print "\n" + etree.tostring(info_xml, pretty_print = True)
-    ics = []
+    ics = ic_helper.get_xml() #initial_facs
+    # for ic in ics:
+    #     print "\n" + etree.tostring(ic, pretty_print = True)
     growth = []
 
     # tests
     assert_equal(etree.tostring(info_xml), etree.tostring(fc.info))
+    ics_strings, fc_strings = [], []
     for i in range(len(ics)):
-        assert_equal(etree.tostring(ics[i]), etree.tostring(fc.ics[i]))
+        ics_strings.append(etree.tostring(ics[i]))
+        fc_strings.append(etree.tostring(fc.initial_conditions[i]))
+    assert_true(compare(ics_strings,fc_strings))
     for i in range(len(growth)):
         assert_equal(etree.tostring(growth[i]), etree.tostring(fc.growth[i]))
 
 def default_time_vars():
     return ["years", [1,100]]
 
+def default_ics_vars():
+    return []
+
 def test_default():
-    runtests(default_time_vars())
+    runtests(default_time_vars(), default_ics_vars())
 
 def test_years():
     time_units = "years"
     time = [1,1180]
-    runtests([time_units, time])
+    runtests([time_units, time], default_ics_vars())
 
 def test_month():
     time_units = "months"
     time = [1, 1180]
-    runtests([time_units, time])
+    runtests([time_units, time], default_ics_vars())
+
+def test_ics():
+    rxtr = tools.TestFCFac("aReactorThing",5,"reactor","BatchReactor")
+    repo = tools.TestFCFac("mightBeAREPOSITORY",2, "repository","SinkFacility")
+    runtests(default_time_vars(), [rxtr,repo])
