@@ -125,16 +125,16 @@ class Growth(object):
         params.text = text
 
     def get_xml(self):
-        xml_growth = []
+        xml_growth = {}
         lvl = 0
         for demand in self.params:
-            root = etree.Element("commodity")
-            name = etree.SubElement(root,"name")
-            name.text = demand.name
+            key = demand.name
+            node_list = []
             for i in range(len(demand.demand_info)-1):
-                node = etree.SubElement(root,"demand")
+                node = etree.Element("demand")
                 eltype = etree.SubElement(node,"type")
                 eltype.text = demand.demand_info[0]
                 self.__add_growth_xml(node,demand.demand_info[i+1])
-            xml_growth.append(root)
+                node_list.append(node)
+            xml_growth[key] = node_list
         return xml_growth

@@ -29,7 +29,7 @@ def runtests(time_vars, initial_facs, growth_params):
     info_helper.add_to_description(description)
     ic_helper.add_to_description(description)
     growth_helper.add_to_description(description)
-    print description
+    # print description
 
     # observed
     fac_types = {}
@@ -46,22 +46,26 @@ def runtests(time_vars, initial_facs, growth_params):
     # for ic in ics:
     #     print "\n" + etree.tostring(ic, pretty_print = True)
     growth = growth_helper.get_xml()
-    for g in growth:
-        print "\n" + etree.tostring(g, pretty_print = True)
+    # for g in growth:
+    #     print "\n" + etree.tostring(g, pretty_print = True)
     
-
     # tests
     assert_equal(etree.tostring(info_xml), etree.tostring(fc.info))
+
     ics_strings, fc_strings = [], []
     for i in range(len(ics)):
         ics_strings.append(etree.tostring(ics[i]))
         fc_strings.append(etree.tostring(fc.initial_conditions[i]))
     assert_true(compare(ics_strings,fc_strings))
-    growth_strings, fc_strings = [], []
-    for i in range(len(growth)):
-        growth_strings.append(etree.tostring(growth[i]))
-        fc_strings.append(etree.tostring(fc.growth[i]))
-    assert_true(compare(growth_strings,fc_strings))
+
+    # for key, nodes in growth.iteritems():
+    #     growth_strings, fc_strings = [], []
+    #     for i in range(len(nodes)):
+    #         growth_strings.append(etree.tostring(growth[key][i]))
+    #         fc_strings.append(etree.tostring(fc.growth[key][i]))
+    #     assert_true(compare(growth_strings,fc_strings))
+    producers = {param.name: param.facilities for param in growth_params}
+    assert_equal(producers,fc.producers)
 
 def default_time_vars():
     return ["years", [1,100]]
@@ -70,7 +74,9 @@ def default_ics_vars():
     return [tools.TestFCFac("rxtr",1,"reactor","BatchReactor")]
 
 def default_growth_vars():
-    return []
+    # return [tools.TestFCGrowth("powa", "GWe", ["rxtr"], [1,120], \
+    #                               ['linear',[0,500]])]
+    return {}
 
 def test_default():
     runtests(default_time_vars(), default_ics_vars(), default_growth_vars())
@@ -91,6 +97,8 @@ def test_ics():
     runtests(default_time_vars(), [rxtr,repo], default_growth_vars())
 
 def test_growth():    
-    rxtr = tools.TestFCGrowth("powa", "GWe", ["rxtr1","rxtr2"], [1,120], ['linear',[0,500]])
-    repo = tools.TestFCGrowth("space", "tHM", ["repo1"], [1,120], ['linear',[50,0,500],[100,0,1000]])
+    rxtr = tools.TestFCGrowth("powa", "GWe", ["rxtr1","rxtr2"], [1,120], \
+                                  ['linear',[0,500]])
+    repo = tools.TestFCGrowth("space", "tHM", ["repo1"], [1,120], \
+                                  ['linear',[50,0,500],[100,0,1000]])
     runtests(default_time_vars(), default_ics_vars(), [rxtr,repo])

@@ -2,12 +2,17 @@ from lxml import etree
 
 class CyclusFuelCycle(object):
     """ simple holding class for the fuel cycle in cyclus input. underlying
-    representation is in xml.
+    representation is in xml. The constructor takes info, an xml node
+    representation of simulation information, initial conditions, a list of xml
+    nodes that state the ICs, and a growth structure, which is a dictionary of
+    commodity demands whose values are a list of xml nodes that construct the
+    piecewise demand function describing that commodity demand.
     """
-    def __init__(self, info, initial_conditions, growth):
+    def __init__(self, info, initial_conditions, growth, producers):
         self.info = info
         self.initial_conditions = initial_conditions
         self.growth = growth
+        self.producers = producers
 
 class ExtraneousFCInfo(object):
     """This is a container class that holds fuel cycle information required to
@@ -103,8 +108,14 @@ class JsonFuelCycleParser(object):
 
     def __constructGrowth(self):
         """Constructs a list of growth curve information"""
-        demands = []
+        demands = {}
         return demands
+
+    def __constructProducers(self):
+        """Constructs a list of growth curve information"""
+        params = self.__description["attributes"]["demands"]
+        producers = {key: value[1] for key, value in params.iteritems()}
+        return producers
 
     def parse(self):
         """Given a python dictionary of the fuel cycle as specified in the
@@ -115,4 +126,5 @@ class JsonFuelCycleParser(object):
         info = self.__constructSimInfo()
         ics = self.__constructInitialCondition()
         growth = self.__constructGrowth()
-        return CyclusFuelCycle(info, ics, growth)
+        producers = self.__constructProducers()
+        return CyclusFuelCycle(info, ics, growth, producers)
