@@ -389,10 +389,11 @@ follows: ::
   
   * growth:
     * type: linear
-    * period: 
+    * period1: 
       * startTime: value
       * startValue: value (optional)
       * slope: value
+    * period2...
 
 The period structure describes each piece-wise section of the growth function. A
 starting value can be supplied if required.
@@ -417,7 +418,7 @@ below::
 	         "grid": [0,120],
 	         "growth": {
 		     "type": "linear",
-		     "period": {
+		     "period1": {
 		         "startTime": 0,
 		         "startValue": 1000,
 	                 "slope": 500

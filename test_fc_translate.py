@@ -18,15 +18,18 @@ def compare(s, t):
         return False
     return not t
 
-def runtests(time_vars, initial_facs):
+def runtests(time_vars, initial_facs, growth_params):
     # helpers
     info_helper = tools.SimInfo(time_vars)
     ic_helper = tools.InitialConditions(initial_facs)
+    growth_helper = tools.Growth(growth_params)
     
     # json object construction
     description = {"attributes":{}, "constraints":{}}
     info_helper.add_to_description(description)
     ic_helper.add_to_description(description)
+    growth_helper.add_to_description(description)
+    print description
 
     # observed
     fac_types = {}
@@ -42,7 +45,10 @@ def runtests(time_vars, initial_facs):
     ics = ic_helper.get_xml() #initial_facs
     # for ic in ics:
     #     print "\n" + etree.tostring(ic, pretty_print = True)
-    growth = []
+    growth = growth_helper.get_xml()
+    for g in growth:
+        print "\n" + etree.tostring(g, pretty_print = True)
+    
 
     # tests
     assert_equal(etree.tostring(info_xml), etree.tostring(fc.info))
@@ -51,29 +57,40 @@ def runtests(time_vars, initial_facs):
         ics_strings.append(etree.tostring(ics[i]))
         fc_strings.append(etree.tostring(fc.initial_conditions[i]))
     assert_true(compare(ics_strings,fc_strings))
+    growth_strings, fc_strings = [], []
     for i in range(len(growth)):
-        assert_equal(etree.tostring(growth[i]), etree.tostring(fc.growth[i]))
+        growth_strings.append(etree.tostring(growth[i]))
+        fc_strings.append(etree.tostring(fc.growth[i]))
+    assert_true(compare(growth_strings,fc_strings))
 
 def default_time_vars():
     return ["years", [1,100]]
 
 def default_ics_vars():
+    return [tools.TestFCFac("rxtr",1,"reactor","BatchReactor")]
+
+def default_growth_vars():
     return []
 
 def test_default():
-    runtests(default_time_vars(), default_ics_vars())
+    runtests(default_time_vars(), default_ics_vars(), default_growth_vars())
 
 def test_years():
     time_units = "years"
     time = [1,1180]
-    runtests([time_units, time], default_ics_vars())
+    runtests([time_units, time], default_ics_vars(), default_growth_vars())
 
 def test_month():
     time_units = "months"
     time = [1, 1180]
-    runtests([time_units, time], default_ics_vars())
+    runtests([time_units, time], default_ics_vars(), default_growth_vars())
 
 def test_ics():
     rxtr = tools.TestFCFac("aReactorThing",5,"reactor","BatchReactor")
     repo = tools.TestFCFac("mightBeAREPOSITORY",2, "repository","SinkFacility")
-    runtests(default_time_vars(), [rxtr,repo])
+    runtests(default_time_vars(), [rxtr,repo], default_growth_vars())
+
+def test_growth():    
+    rxtr = tools.TestFCGrowth("powa", "GWe", ["rxtr1","rxtr2"], [1,120], ['linear',[0,500]])
+    repo = tools.TestFCGrowth("space", "tHM", ["repo1"], [1,120], ['linear',[50,0,500],[100,0,1000]])
+    runtests(default_time_vars(), default_ics_vars(), [rxtr,repo])

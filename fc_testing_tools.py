@@ -75,3 +75,66 @@ class InitialConditions(object):
             number.text = str(fac.number)
             xml_ics.append(root)
         return xml_ics
+
+class TestFCGrowth(object):
+    """A holder class for testing demand curves. It holds all the information
+    needed to set up  the various xml nodes and json objects.
+    """
+    def __init__(self, name, units, facilities, time, demand_info): 
+        self.name = name 
+        self.units = units
+        self.facilities = facilities
+        self.time = time
+        self.demand_info = demand_info
+
+    def __str__(self):
+        return self.name
+
+class Growth(object):
+    def __init__(self, params):
+        self.params = params
+
+    def __add_growth_period(self, dic, n, info):
+        key = "period"+str(n)
+        dic[key] = {"startTime": info[0], \
+                        "slope": info[1]}
+        if len(info) > 2:
+            dic[key]["startValue"] = info[2]
+
+    def add_to_description(self, description):
+        attributes, constraints = {}, {}
+        for demand in self.params:
+            attributes[demand.name] = [demand.units, demand.facilities]
+            growth = {}
+            growth["type"] = demand.demand_info[0]
+            for i in range(len(demand.demand_info)-1):
+                self.__add_growth_period(growth,i+1,demand.demand_info[i+1])
+            constraints[demand.name] = {"grid": demand.time, "growth": growth}
+        description["attributes"]["demands"] = attributes
+        description["constraints"]["demands"] = constraints
+
+    def __add_growth_xml(self, node, info):
+        start =  etree.SubElement(node,"start_time")
+        start.text = str(info[0])
+        text = str(info[1])
+        if len(info) > 2:
+             text += " " + str(info[2])
+        else: 
+            text += " 0"
+        params = etree.SubElement(node,"parameters")
+        params.text = text
+
+    def get_xml(self):
+        xml_growth = []
+        lvl = 0
+        for demand in self.params:
+            root = etree.Element("commodity")
+            name = etree.SubElement(root,"name")
+            name.text = demand.name
+            for i in range(len(demand.demand_info)-1):
+                node = etree.SubElement(root,"demand")
+                eltype = etree.SubElement(node,"type")
+                eltype.text = demand.demand_info[0]
+                self.__add_growth_xml(node,demand.demand_info[i+1])
+            xml_growth.append(root)
+        return xml_growth
