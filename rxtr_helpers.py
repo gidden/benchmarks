@@ -100,14 +100,14 @@ class ReactorGenerator(object):
     def parameters(self):
         params = []
         thermal_power = self.production.capacity / self.production.eff
-        params.append(("thermal_power",["double","GWt"],thermal_power))
+        params.append(("thermalPower",["double","GWt"],thermal_power))
         params.append(("efficiency",["double","percent"],self.production.eff))
         params.append(("burnup",["double","GWd/tHM"],self.fuels.burnup))
-        params.append(("storage_time",["int","year"],self.schedule.storage))
-        params.append(("cooling_time",["int","year"],self.schedule.cooling))
-        params.append(("cycle_length",["int","month"],self.schedule.cycle))
-        params.append(("core_loading",["double","kg"],self.fuels.in_core_qty))
-        params.append(("batch_number",["int",""],self.fuels.batches))
+        params.append(("storageTime",["int","year"],self.schedule.storage))
+        params.append(("coolingTime",["int","year"],self.schedule.cooling))
+        params.append(("cycleLength",["int","month"],self.schedule.cycle))
+        params.append(("coreLoading",["double","kg"],self.fuels.in_core_qty))
+        params.append(("batchNumber",["int",""],self.fuels.batches))
         params.append(("lifetime",["int","year"],self.schedule.lifetime))
         return params
 

@@ -107,6 +107,7 @@ class JsonReactorParser(JsonFacilityParser):
     reactors from the FCS benchmark specification language and returns a
     cyclus-based representation of the facility.
     """
+    
     def __init__(self, name, description, extra_info):
         """ Reactor Parser constructor. Note that the additional argument
         provides an interface to the additional information required to make a
@@ -117,10 +118,20 @@ class JsonReactorParser(JsonFacilityParser):
         self._recipeGuide = extra_info.recipeGuide
         self._refuel_time = extra_info.refuel_time
         self._prod_t = extra_info.prod_t
+        self.tag_eff = "efficiency"
+        self.tag_pwr = "thermalPower"
+        self.tag_loading = "coreLoading"
+        self.tag_batch_n = "batchNumber"
+        self.tag_cycle = "cycleLength"
+        self.tag_life = "lifetime"
+        self.tag_bu = "burnup"
+        self.tag_storage = "storageTime"
+        self.tag_cooling = "coolingTime"
+
 
     def _getProduction(self):
-        eff = float(self._description["constraints"]["efficiency"])
-        power = eff * float(self._description["constraints"]["thermal_power"])
+        eff = float(self._description["constraints"][self.tag_eff])
+        power = eff * float(self._description["constraints"][self.tag_pwr])
         return power
     
     def _getNode(self):
@@ -129,21 +140,21 @@ class JsonReactorParser(JsonFacilityParser):
         exports = self._description["outputs"]
         inrecipes = [self._recipeGuide[import_mat] for import_mat in imports]
         outrecipes = [self._recipeGuide[export_mat] for export_mat in exports]
-        in_core = float(self._description["constraints"]["core_loading"])
+        in_core = float(self._description["constraints"][self.tag_loading])
         out_core = in_core
-        batches = int(self._description["constraints"]["batch_number"])
-        burnup = float(self._description["constraints"]["burnup"])        
+        batches = int(self._description["constraints"][self.tag_batch_n])
+        burnup = float(self._description["constraints"][self.tag_bu])        
         fuels = ReactorFuels(imports,inrecipes,in_core,
                              exports,outrecipes,out_core,batches,burnup)
         
-        cycle = int(self._description["constraints"]["cycle_length"])
-        lifetime = int(self._description["constraints"]["lifetime"])
-        storage = int(self._description["constraints"]["storage_time"])
-        cooling = int(self._description["constraints"]["cooling_time"])
+        cycle = int(self._description["constraints"][self.tag_cycle])
+        lifetime = int(self._description["constraints"][self.tag_life])
+        storage = int(self._description["constraints"][self.tag_storage])
+        cooling = int(self._description["constraints"][self.tag_cooling])
         schedule = ReactorSchedule(cycle,self._refuel_time,lifetime,storage,cooling)
         
-        eff = float(self._description["constraints"]["efficiency"])
-        capacity = eff * float(self._description["constraints"]["thermal_power"])
+        eff = float(self._description["constraints"][self.tag_eff])
+        capacity = eff * float(self._description["constraints"][self.tag_pwr])
         if self._prod_t is None:
             self._prod_t = "power"
         production = ReactorProduction(self._prod_t,capacity,eff)
