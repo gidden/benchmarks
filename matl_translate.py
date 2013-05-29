@@ -13,6 +13,10 @@ class CyclusMaterial(object):
         self.name = name
         self.node = node
 
+    def __str__(self):
+        return "Name: " + self.name + "\n" \
+            + "Node: \n" + etree.tostring(self.node, pretty_print = True)
+
 class JsonMaterialParser(object):
     """ A parser that accepts a python-based json object representation of
     materials from the FCS benchmark specification language and returns a
@@ -23,7 +27,7 @@ class JsonMaterialParser(object):
         self.__description = description
 
     def __check_recipe(self,description):
-        return description["attributes"]["recipe"] == "true"
+        return description["attributes"]["recipe"]
     
     def __check_suggestedComposition(self,description):
         return "suggestedComposition" in description["attributes"]

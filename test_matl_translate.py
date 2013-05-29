@@ -51,7 +51,7 @@ def setup_json_rec(name,ntopes,isotopes,values):
     for i in range(ntopes):
         jisotopes.append([isotopes[i],values[i]])
     obj = {name:{\
-               "attributes":{"recipe":"true"},\
+               "attributes":{"recipe":True},\
                "constraints":jisotopes\
           }}
     return name, obj[name]
@@ -61,7 +61,7 @@ def setup_json_non(name,ntopes,isotopes,values):
     for i in range(ntopes):
         jisotopes.append([isotopes[i],values[i]])
     obj = {name:{\
-               "attributes":{"recipe":"false","suggestedComposition":jisotopes},\
+               "attributes":{"recipe":False,"suggestedComposition":jisotopes},\
                "constraints":[]\
           }}
     return name, obj[name]
@@ -69,7 +69,7 @@ def setup_json_non(name,ntopes,isotopes,values):
 def setup_json_throw():
     name = "some_name"
     obj = {name:{\
-            "attributes":{"recipe":"false"},\
+            "attributes":{"recipe":False},\
             "constraints":[]\
           }}
     return name, obj[name]
