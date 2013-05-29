@@ -46,7 +46,7 @@ def default_time_vars():
     return ["years", [1,100]]
 
 def default_ics_vars():
-    return [tools.TestFCFac("rxtr",1,"reactor","BatchReactor")]
+    return [tools.TestFCFac("rxtr", 1, "reactor", "BatchReactor")]
 
 def default_growth_vars():
     return [tools.TestFCGrowth("powa", "GWe", ["rxtr"], [1,120], \
@@ -66,8 +66,8 @@ def test_month():
     runtests([time_units, time], default_ics_vars(), default_growth_vars())
 
 def test_ics():
-    rxtr = tools.TestFCFac("aReactorThing",5,"reactor","BatchReactor")
-    repo = tools.TestFCFac("mightBeAREPOSITORY",2, "repository","SinkFacility")
+    rxtr = tools.TestFCFac("aReactorThing", 5, "reactor", "BatchReactor")
+    repo = tools.TestFCFac("mightBeAREPOSITORY", 2, "repository","SinkFacility")
     runtests(default_time_vars(), [rxtr,repo], default_growth_vars())
 
 def test_growth():    
