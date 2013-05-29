@@ -23,6 +23,17 @@ laid forth in other specification languages in computational nuclear science
 decisions must be made, e.g., using camelCase instead of other ways to write
 compound_words.
 
+The specifications provided below have three main sections (in general). The
+first is metadata. Metadata sections exist purely to provide additional
+information not required by the specification (but information that's nice to
+have anyway). By definition, metadata should be able to be ignored without
+losing information critical to the full specification. Following metadata is an
+attributes section. The attributes for a given object (e.g. material, facility)
+define the object's *state space*, i.e., the information that makes that object
+what it is. Finally, the constraints section defines constraints placed on the
+object's state space. For example, an object could be defined by a single
+integer (its attribute) which is constrained to a range of [0,5].
+
 Materials
 +++++++++
 
@@ -46,12 +57,12 @@ We define the materials specification as follows: ::
    * materials
      * materialName1
        * metadata (optional)
-       * attributes
-      	 * recipe
-           * true/false
       	 * suggestedComposition (optional)
            * isotope1
            * isotope2
+       * attributes
+      	 * recipe
+           * true/false
          * parents (optional)
        * constraints
        	 * constraint1
@@ -90,12 +101,14 @@ below ::
           ]
       },
       "spent_pwr_uox": {
-          "attributes": {
-              "recipe": false,
+          "metadata": {
               "suggestedComposition": [
                   ["U235",0.01],
                   ...
               ]
+	  }
+          "attributes": {
+              "recipe": false
           }
           "constraints": [
               "id == 92235 && x < 0.0495",
@@ -139,12 +152,6 @@ the simplest case, e.g. a UOX LWR, there may be one zone. A more complicated
 case would include a fast reactor that incorporates an axial and radial
 blanket. 
 
-.. Anthony, it appears that the attributes section is really the specification
-   definition. If you make the analogy to the GND paper, our attributes for
-   facilities (and only facilities) outline what will come next, which is
-   basically the specification definition.. To clarify, is the attributes
-   section only for units?
-
 We define the reactor specification as follows: ::
 
    * reactorName1
@@ -154,28 +161,29 @@ We define the reactor specification as follows: ::
        * thermalPower: units
        * efficiency: units
        * cycleLegth: units
-       * batches: units
        * lifetime: {units | distributed} 
-       * fuels:
-	 * fuel1
-	   * coreLoading: units
-	   * burnup: units
-	   * coolingTime: units
-	   * storageTime: units
-	 * fuel2... (optional)
+       * fuelTypes: fuel1, fuel2..
+       * batches: units, fuelTypes
+       * coreLoading: units, fuelTypes
+       * burnup: units, fuelTypes
+       * coolingTime: units, fuelTypes
+       * storageTime: units, fuelTypes
      * constraints
        * thermalPower: value
        * efficiency: value
        * cycleLegth: value
        * batches: value
        * lifetime: {value | distributed}
-       * fuels:
-	 * fuel1
-	   * coreLoading: value
-	   * burnup: value
-	   * coolingTime: value
-	   * storageTime: value
-	 * fuel2... (optional)
+       * batches: value, fuel1
+       * batches: value, fuel2...
+       * coreLoading: value, fuel1
+       * coreLoading: value, fuel2...
+       * burnup: value, fuel1
+       * burnup: value, fuel2...
+       * coolingTime: value, fuel1
+       * coolingTime: value, fuel2...
+       * storageTime: value, fuel1
+       * storageTime: value, fuel2...
      * inputMaterials
      * outputMaterials
    * reactorName2...
@@ -185,6 +193,12 @@ type and units, for example::
 
   thermalPower: float, GWd/tHM
 
+Some reactors utilize multiple kinds of fuels (e.g. fast reactors have different
+fuel types between their cores and blankets). In such a case, one must
+differentiate between certain parameters based on the fuel type, such as its
+burnup, core loading amount, etc. The specification allows for this situation by
+appending a fuelType specifier on the values of these parameters.
+
 The lifetime member allows for one of two types of values. If specific units and
 a value are given, then all facilities of the given class are assigned a
 specific lifetime. If it instead flagged as a distribution, facility lifetimes
@@ -192,8 +206,6 @@ are inferred from the Fuel Cycle demand section. This is required of the
 specification for now due to the method by which previous benchmarks have been
 defined (i.e., defining a "facility life distribution curve" rather than
 defining a demand for certain facilities -- see [BOUCHER07]_).
-
-.. Anthony, can you advise here (yea, nay)?
 
 An example of the specification implemented in JSON is shown below: ::
 
@@ -205,42 +217,28 @@ An example of the specification implemented in JSON is shown below: ::
 	     "thermalPower": ["float", "GWt"],
 	     "efficiency": ["float", "percent"],
 	     "cycleLength": ["int", "month"],
-	     "batches": ["int",None],
 	     "lifetime": ["int", "year"],
-	     "fuels": {
-	         "leu": {
-	     	     "coreLoading": ["float", "kg"],
-		     "burnup": ["float", "GWd/tHM"],
-	     	     "storageTime": ["int", "year"],
-	     	     "coolingTime": ["int", "year"],
-		 }
-	     }
+	     "fuels": ["leu"],
+	     "batches": ["int", "", ["leu"]],
+	     "coreLoading": ["float", "kg", ["leu"]],
+	     "burnup": ["float", "GWd/tHM", ["leu"]],
+	     "storageTime": ["int", "year", ["leu"]],
+	     "coolingTime": ["int", "year", ["leu"]],
 	 },
 	 "constraints": [
-	     ["thermal_power", 4.25],
+	     ["thermalPower", 4.25],
 	     ["efficiency", 34.1],
-	     ["cycle_length", 12],
-	     ["core_loading", 78.7],
-	     ["nbatches", 3],
+	     ["cycleLength", 12],
 	     ["lifetime", 60],
-	     "fuels": {
-	         "leu": {
-	     	     ["coreLoading", 78.7],
-	     	     ["burnup", 60],
-	     	     ["storageTime", 2],
-	     	     ["coolingTime", 5],
-		 }
-	     }
+	     ["batches", 3, "leu"],
+	     ["coreLoading", 78.7, "leu"],
+	     ["burnup", 60, "leu"],
+	     ["storageTime", 2, "leu"],
+	     ["coolingTime", 5, "leu"]
 	 ],
 	 "inputs": ["leu"],
 	 "outputs": ["used_leu"]
      }
-
-.. Anthony, can you confirm that the reason we use dictionaries above is that we
-   have multiple entries per "key" versus below where it is known that we'll
-   only have one entry per "key"? I'm curious because of the "fuels" data
-   structure I've introduced
-
 
 Repositories
 ~~~~~~~~~~~~
@@ -272,10 +270,10 @@ An example of a specification implemented in JSON is shown below: ::
 	     "lifetime": ["int", "year"], 
 	     "capacity": ["double", "tHM/year"]
 	 }
-	 "constraints": {
-	     "lifetime": 60, 
-             "capacity": 800.0
-	 }, 
+	 "constraints": [
+	     ["lifetime", 60], 
+             ["capacity", 800.0]
+	 ], 
 	 "inputs": ["used_leu"]
       }
 
@@ -312,10 +310,6 @@ follows: ::
      * outputMaterials
    * repositoryName2...
 
-.. Anthony, can you advise on how the separationClasses structure fits with your
-   ideas here.. I'm still reallly struggling to understand when to use
-   dictionaries and lists and when to declare things in the attributes section
-   and when to declare them in constraints
 
 Advanced Fabrication
 ~~~~~~~~~~~~~~~~~~~~
@@ -371,11 +365,12 @@ We define the fuel cycle specification as follows: ::
 	* demand2...
     * constraints
       * grid: value
-      * demands:
-        * demand1: 
-          * grid: value
-	  * growth: description
-        * demand2...
+      * demand1:
+        * grid: value
+	* growth: description
+      * demand2...
+    * availableTechnologies (optional)
+      * technology: grid
 
 In general, the attributes and constraints of the fuelCycle data structure are
 pretty straightforward. Inclusive time periods as described as grids,
@@ -396,7 +391,9 @@ follows: ::
     * period2...
 
 The period structure describes each piece-wise section of the growth function. A
-starting value can be supplied if required.
+starting value can be supplied if required. Because of the complexity required
+to describe these demand curves, the constraints section for the fuel cycle is
+implemented as a dictionary (i.e., an object in JSON).
 
 An example implementation of the fuel cycle specification in JSON is given
 below::
