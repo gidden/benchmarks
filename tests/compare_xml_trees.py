@@ -4,19 +4,24 @@ from copy import deepcopy
 def is_leaf(a):
     return len(a) == 0
 
-def compare_leaves(a, b):
-    return etree.tostring(a) == etree.tostring(b)
+def compare_leaves(a, b, log = False):
+    str1 = etree.tostring(a).strip()
+    str2 = etree.tostring(b).strip()
+    if log:
+        print "Comparing: \n" + str1 + " to: " + str2 + \
+            "\n which equates to: " + str(str1 == str2)
+    return str1 == str2
 
-def compare_nodes(a, b):
+def compare_nodes(a, b, log = False):
     if is_leaf(a) or is_leaf(b):
-        if is_leaf(a) and is_leaf(b): return compare_leaves(a, b)
+        if is_leaf(a) and is_leaf(b): return compare_leaves(a, b, log)
         else: return False
     else:
         b = deepcopy(b)
         try: 
             for achild in a:
                 for bchild in b:
-                     if compare_nodes(achild, bchild): b.remove(bchild)
+                     if compare_nodes(achild, bchild, log): b.remove(bchild)
         except ValueError:
             return False
         return len(b) == 0
