@@ -57,7 +57,7 @@ class ReactorGenerator(object):
     def __add_loading(self,node):
         incore = etree.SubElement(node,"incoreloading")
         incore.text = str(self.fuels.in_core_qty)
-        outcore = etree.SubElement(node,"outcoreloadoutg")
+        outcore = etree.SubElement(node,"outcoreloading")
         outcore.text = str(self.fuels.out_core_qty)
         batches = etree.SubElement(node,"batchespercore")
         batches.text = str(self.fuels.batches)
