@@ -34,7 +34,7 @@
   </market>
 
   <facility>
-    <name>source</name>
+    <name>source_leu</name>
     <model>
       <SourceFacility>
         <output>
@@ -93,7 +93,7 @@
 
   <region>
     <name>region</name>
-    <allowedfacility>source</allowedfacility>
+    <allowedfacility>source_leu</allowedfacility>
     <allowedfacility>lwr_reactor</allowedfacility>
     <allowedfacility>lwr_repository</allowedfacility>
     <model>
@@ -110,12 +110,12 @@
     </model>
     <institution>
       <name>institution</name>
-      <availableprototype>source</availableprototype>
+      <availableprototype>source_leu</availableprototype>
       <availableprototype>lwr_reactor</availableprototype>
       <availableprototype>lwr_repository</availableprototype>
       <initialfacilitylist>
         <entry>
-          <prototype>source</prototype>
+          <prototype>source_leu</prototype>
           <number>1</number>
         </entry>
         <entry>

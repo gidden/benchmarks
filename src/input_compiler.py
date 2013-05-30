@@ -21,7 +21,8 @@ class CyclusTransformer(object):
         self.facs = facs
         self.fc = fc
         self.commod_nodes, self.market_nodes = self.getResourceNodes()
-        self.sources = []#self.constructSources()
+        self.sources = self.constructSources()
+        for source in self.sources: self.facs.append(source)
         self.inst = []#self.constructInstNode()
         self.region = []#self.constructRegionNode()
 
@@ -41,6 +42,39 @@ class CyclusTransformer(object):
             commods.append(cnode)
             markets.append(mnode)
         return commods, markets
+
+    def constructSource(self, commod):
+        name = "source_" + commod
+        root = etree.Element("facility")
+        nname = etree.SubElement(root, "name")
+        nname.text = name
+        model = etree.SubElement(root, "model")
+        classn = etree.SubElement(model, "SourceFacility")
+        output = etree.SubElement(classn, "output")
+        outputc = etree.SubElement(output, "outcommodity")
+        outputc.text = commod
+        outputr = etree.SubElement(output, "recipe")
+        outputr.text = commod
+        outcommod = etree.SubElement(root, "outcommodity")
+        outcommod.text = commod
+        return facxl.CyclusFacility(name, "source", [], [commod], None, root)
+
+    def getSourceCommods(self):
+        all_imports = []
+        all_exports = []
+        for fac in self.facs:
+            all_imports += fac.imports
+            all_exports += fac.exports
+        for export in all_exports:
+            if export in all_imports: all_imports.remove(export)
+        return all_imports
+
+    def constructSources(self):
+        sources = []
+        commods = self.getSourceCommods()
+        for commod in commods: 
+            sources.append(self.constructSource(commod))
+        return sources
 
     def translate(self):
         root = etree.Element("simulation")
@@ -70,21 +104,6 @@ if __name__ == "__main__":
 #    print fc.parse()
 
     xformer = CyclusTransformer(mats, facs, fc)
-    for node in xformer.commod_nodes: print etree.tostring(node, pretty_print = True)
-    for node in xformer.market_nodes: print etree.tostring(node, pretty_print = True)
-    # cycl_matls = [JsonMaterialParser(name, descr).parse() \
-    #                   for name, descr in json_matls.iteritems()]
-
-    # for mat in cycl_matls: print mat
-
-    # fac_t_map = {"lwr_reactor":"reactor","repository":"repository"}
-    # cycl_fc = JsonFuelCycleParser(json_fc, ExtraneousFCInfo(fac_t_map)).parse()
-    # print cycl_fc
-    
-    # for name, descr in json_facs.iteritems():
-    #     print name, descr 
-
-    # cycl_facs = [parse_fac(name, descr) \
-    #                  for name, descr in json_facs.iteritems()]
-
-    # for fac in cycl_facs: print fac
+    # for node in xformer.commod_nodes: print etree.tostring(node, pretty_print = True)
+    # for node in xformer.market_nodes: print etree.tostring(node, pretty_print = True)
+    for source in xformer.sources: print etree.tostring(source.node, pretty_print = True)
