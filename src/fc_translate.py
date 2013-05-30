@@ -70,7 +70,8 @@ class JsonFuelCycleParser(object):
         units = self.__description["attributes"]["grid"]
         time = self.__description["constraints"]["grid"]
         diff = time[1] - time[0]
-        if units is "years":
+        years = ["year", "years"]
+        if units in years:
             diff *= 12
         return diff
 
