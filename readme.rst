@@ -210,7 +210,7 @@ defining a demand for certain facilities -- see [BOUCHER07]_).
 An example of the specification implemented in JSON is shown below: ::
 
      "lwr_reactor": {
-     	 "metadata: {
+     	 "metadata": {
 	     "type":"reactor"
 	 }
 	 "attributes": {
