@@ -1,0 +1,15 @@
+{
+    "materials": {
+	"mat1": {
+	    "attributes": {"recipe": true}, 
+	    "constraints": [["U235", 4], ["U238", 96]]
+	},
+	"mat2": {
+	    "metadata": { 
+		"suggestedComposition": [["U235", 5], ["U238", 95]]
+	    },
+	    "attributes": {"recipe": false}, 
+	    "constraints": []
+	}
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "facilities": {
+	"lwr_reactor": {
+	    "metadata": {
+		"type":"reactor"
+	    },
+	    "attributes": {
+		"thermalPower": ["float", "GWt"],
+		"efficiency": ["float", "percent"],
+		"cycleLength": ["int", "month"],
+		"lifetime": ["int", "year"],
+		"fuels": ["leu"],
+		"batches": ["int", "", ["leu"]],
+		"coreLoading": ["float", "kg", ["leu"]],
+		"burnup": ["float", "GWd/tHM", ["leu"]],
+		"storageTime": ["int", "year", ["leu"]],
+		"coolingTime": ["int", "year", ["leu"]]
+	    },
+	    "constraints": [
+		["thermalPower", 1],
+		["efficiency", 1],
+		["cycleLength", 12],
+		["lifetime", 60],
+		["batches", 3, "leu"],
+		["coreLoading", 100, "leu"],
+		["burnup", 60, "leu"],
+		["storageTime", 2, "leu"],
+		["coolingTime", 5, "leu"]
+	    ],
+	    "inputs": ["leu"],
+	    "outputs": ["used_leu"]
+	},
+	"lwr_repository": {
+	    "metadata": {
+		"type":"repository"
+	    },
+	    "attributes": {
+		"lifetime": ["int", "year"],
+		"capacity": ["double", "tHM/year"]
+	    },
+	    "constraints": [
+		["lifetime", 60],
+		["capacity", 800]
+	    ],
+	    "inputs": ["used_leu"]
+	}
+    },
+    "recipes": {"leu":"leu","used_leu":"used_leu"}
+}

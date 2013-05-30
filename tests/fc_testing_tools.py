@@ -72,7 +72,7 @@ class InitialConditions(object):
         for fac in self.fac_list:
             entry = etree.SubElement(root,"entry")
             prototype = etree.SubElement(entry,"prototype")
-            prototype.text = fac.agent_t
+            prototype.text = fac.name
             number = etree.SubElement(entry,"number")
             number.text = str(fac.number)
         return root

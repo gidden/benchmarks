@@ -14,6 +14,15 @@ class CyclusFuelCycle(object):
         self.growth = growth
         self.producers = producers
 
+    def __str__(self):
+        return "Info: \n" + \
+            etree.tostring(self.info, pretty_print = True) + "\n" \
+            + "ICs: \n" + \
+            etree.tostring(self.initial_conditions, pretty_print = True) + "\n" \
+            + "Growth: \n" +  \
+            etree.tostring(self.growth, pretty_print = True) + "\n" \
+            + "Producers: " + str(self.producers)
+
 class ExtraneousFCInfo(object):
     """This is a container class that holds fuel cycle information required to
     complete a Cyclus input file that is not directly related to the fuel cycle
@@ -102,10 +111,9 @@ class JsonFuelCycleParser(object):
             root = etree.Element("initialfacilitylist")
             fac_type_map = self.__extra_info.fac_type_map
             for name, amount in initial_conditions.iteritems():
-                fac_t = fac_type_map[name]
                 entry = etree.SubElement(root,"entry")
                 prototype = etree.SubElement(entry,"prototype")
-                prototype.text = self.__default_agent_types[fac_t]
+                prototype.text = name
                 number = etree.SubElement(entry,"number")
                 number.text = str(amount)
         return root
@@ -130,8 +138,9 @@ class JsonFuelCycleParser(object):
         root = etree.Element("GrowthRegion")
         dic = self.__description["constraints"]["demands"]
         for key in dic.iterkeys():
-            if dic[key]["growth"]["type"] is not "linear":
-                raise SupportError("Only linear functions currently supported")
+            growth_t = dic[key]["growth"]["type"]
+            if growth_t != "linear":
+                raise SupportError(growth_t + " is not supported " + "(only linear functions currently supported)")
             commod = etree.SubElement(root,"commodity")
             name = etree.SubElement(commod,"name")
             name.text = key

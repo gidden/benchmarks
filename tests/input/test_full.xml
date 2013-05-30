@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+
+<simulation>
+  <control>
+    <duration>1200</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+    <simstart>0</simstart>
+    <decay>2</decay>
+  </control>
+
+  <commodity>
+    <name>leu</name>
+  </commodity>
+
+  <commodity>
+    <name>used_leu</name>
+  </commodity>
+
+  <market>
+    <name>leu_market</name>
+    <mktcommodity>leu</mktcommodity>
+    <model>
+      <NullMarket/>
+    </model>
+  </market>
+
+  <market>
+    <name>used_leu_market</name>
+    <mktcommodity>used_leu</mktcommodity>
+    <model>
+      <NullMarket/>
+    </model>
+  </market>
+
+  <facility>
+    <name>source</name>
+    <model>
+      <SourceFacility>
+        <output>
+          <outcommodity>leu</outcommodity>
+          <recipe>leu</recipe>
+        </output>
+      </SourceFacility>
+    </model>
+    <outcommodity>leu</outcommodity>
+  </facility>
+    
+  <facility>
+    <name>lwr_reactor</name>
+    <lifetime>720</lifetime>
+    <model>
+      <BatchReactor>
+        <fuel_input>
+         <incommodity>leu</incommodity>
+         <inrecipe>leu</inrecipe>
+        </fuel_input>
+        <fuel_output>
+         <outcommodity>used_leu</outcommodity>
+         <outrecipe>used_leu</outrecipe>
+        </fuel_output>
+        <cyclelength>12</cyclelength>
+        <refueldelay>0</refueldelay>
+        <incoreloading>100</incoreloading>
+        <outcoreloading>100</outcoreloading>
+        <batchespercore>3</batchespercore>
+        <commodity_production>
+          <commodity>lwr_reactor_power</commodity>
+          <capacity>1</capacity>
+          <cost>1</cost>
+        </commodity_production>
+      </BatchReactor>
+    </model>
+    <incommodity>leu</incommodity>
+    <outcommodity>used_leu</outcommodity>
+  </facility>
+  
+  <facility>
+    <name>lwr_repository</name>
+    <lifetime>720</lifetime>
+    <model>
+      <SinkFacility>
+        <input>
+          <commodities>
+            <incommodity>waste</incommodity>
+          </commodities>
+          <input_capacity>800</input_capacity>
+        </input>
+      </SinkFacility>
+    </model>
+    <incommodity>waste</incommodity>
+  </facility>
+
+  <region>
+    <name>region</name>
+    <allowedfacility>source</allowedfacility>
+    <allowedfacility>lwr_reactor</allowedfacility>
+    <allowedfacility>lwr_repository</allowedfacility>
+    <model>
+      <GrowthRegion>
+        <commodity>
+          <name>lwr_reactor_power</name>
+          <demand>
+            <type>linear</type>
+            <parameters>500 1000</parameters>
+            <start_time>0</start_time>
+          </demand>
+        </commodity>
+      </GrowthRegion>
+    </model>
+    <institution>
+      <name>institution</name>
+      <availableprototype>source</availableprototype>
+      <availableprototype>lwr_reactor</availableprototype>
+      <availableprototype>lwr_repository</availableprototype>
+      <initialfacilitylist>
+        <entry>
+          <prototype>source</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>lwr_repository</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <model>
+        <ManagerInst/>
+      </model>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>leu</name>
+    <basis>mass</basis>
+
+    <isotope>
+      <id>92235</id>
+      <comp>4</comp>
+    </isotope>
+
+    <isotope>
+      <id>92238</id>
+      <comp>96</comp>
+    </isotope>
+  </recipe>
+
+  <recipe>
+    <name>used_leu</name>
+    <basis>mass</basis>
+
+    <isotope>
+      <id>92235</id>
+      <comp>5</comp>
+    </isotope>
+
+    <isotope>
+      <id>92238</id>
+      <comp>95</comp>
+    </isotope>
+  </recipe>
+
+</simulation>

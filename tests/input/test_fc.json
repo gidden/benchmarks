@@ -1,0 +1,27 @@
+"fuelCycle": {
+    "attributes": {
+        "grid": "year",
+        "initialConditions": {
+            "lwr_repository": 1,
+        },
+        "demands": {
+            "power": ["GWe", ["lwr_reactor"]]
+        }
+    }
+    "constraints": {
+        "grid": [0, 120],
+        "demands": {
+            "power": {
+                "grid": [0, 120],
+                "growth": {
+                    "type": "linear",
+                    "period1": {
+                        "startTime": 0,
+                        "startValue": 1000,
+                        "slope": 500
+                    }
+                }
+            }
+        }
+    }
+}
