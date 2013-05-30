@@ -21,24 +21,24 @@ import pprint
 # ------------------------------------------------------------------------------
 
 def test_mats_translation():
-    json_data = open("test_mat.json")
+    json_data = open("input/test_mat.json")
     data = json.load(json_data)
     matls = readMaterials(data["materials"])
 
-    tree = etree.parse("test_mat.xml")
+    tree = etree.parse("input/test_mat.xml")
     root = etree.Element("root")
     for mat in matls: root.append(mat.node)
     
     assert_true(compare_nodes(root, tree.getroot(), log = False))
 
 def test_fac_translation():    
-    json_data = open("test_fac.json")
+    json_data = open("input/test_fac.json")
     data = json.load(json_data)
     # note that data["recipes"] is an artifact required to print out the xml
     # nodes that will be fleshed out in higher-level objects
     facs = readFacs(data["facilities"], data["recipes"])
     
-    tree = etree.parse("test_fac.xml")
+    tree = etree.parse("input/test_fac.xml")
     root = etree.Element("root")
     for fac in facs: root.append(fac.node)
     assert_true(compare_nodes(root, tree.getroot(), log = False))
