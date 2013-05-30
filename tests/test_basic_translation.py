@@ -7,6 +7,7 @@ sys.path.append("../src")
 from matl_translate import readMaterials
 from fac_translate import readFacs
 from compare_xml_trees import compare_nodes
+from input_compiler import CyclusTranslator
 
 # json/xml packages
 try:
@@ -46,8 +47,8 @@ def test_fac_translation():
 def test_full_translation():
     json_data = open("input/test_full.json")
     data = json.load(json_data)
-    # translator = CyclusTranslator(data)
+    xlator = CyclusTranslator(data)
     tree = etree.parse("input/test_full.xml")
-    print etree.tostring(tree.getroot(), pretty_print = True)
-    #assert_true(compare_nodes(translator.translate(), tree.getroot(), log = False))
+    print etree.tostring(xlator.translate(), pretty_print = True)
+    assert_true(compare_nodes(xlator.translate(), tree.getroot(), log = False))
     
