@@ -1,0 +1,48 @@
+<root>
+  
+  <facility>
+    <name>lwr_reactor</name>
+    <lifetime>720</lifetime>
+    <model>
+      <BatchReactor>
+        <fuel_input>
+         <incommodity>leu</incommodity>
+         <inrecipe>leu</inrecipe>
+        </fuel_input>
+        <fuel_output>
+         <outcommodity>used_leu</outcommodity>
+         <outrecipe>used_leu</outrecipe>
+        </fuel_output>
+        <cyclelength>12</cyclelength>
+        <refueldelay>0</refueldelay>
+        <incoreloading>100</incoreloading>
+        <outcoreloading>100</outcoreloading>
+        <batchespercore>3</batchespercore>
+        <commodity_production>
+          <commodity>lwr_reactor_power</commodity>
+          <capacity>1</capacity>
+          <cost>1</cost>
+        </commodity_production>
+      </BatchReactor>
+    </model>
+    <incommodity>leu</incommodity>
+    <outcommodity>used_leu</outcommodity>
+  </facility>
+  
+  <facility>
+    <name>lwr_repository</name>
+    <lifetime>720</lifetime>
+    <model>
+      <SinkFacility>
+        <input>
+          <commodities>
+            <incommodity>waste</incommodity>
+          </commodities>
+          <input_capacity>800</input_capacity>
+        </input>
+      </SinkFacility>
+    </model>
+    <incommodity>waste</incommodity>
+  </facility>
+
+</root>
