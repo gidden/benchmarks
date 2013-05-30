@@ -1,3 +1,7 @@
+# get source files in path
+import sys
+sys.path.append("../src")
+
 # local 
 import fc_translate as xlate
 import fc_testing_tools as tools
