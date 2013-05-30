@@ -36,9 +36,18 @@ def test_fac_translation():
     data = json.load(json_data)
     # note that data["recipes"] is an artifact required to print out the xml
     # nodes that will be fleshed out in higher-level objects
-    facs = readFacs(data["facilities"], data["recipes"])
+    facs = readFacs(data["facilities"])#, data["recipes"])
     
     tree = etree.parse("input/test_fac.xml")
     root = etree.Element("root")
     for fac in facs: root.append(fac.node)
     assert_true(compare_nodes(root, tree.getroot(), log = False))
+
+def test_full_translation():
+    json_data = open("input/test_full.json")
+    data = json.load(json_data)
+    # translator = CyclusTranslator(data)
+    tree = etree.parse("input/test_full.xml")
+    print etree.tostring(tree.getroot(), pretty_print = True)
+    #assert_true(compare_nodes(translator.translate(), tree.getroot(), log = False))
+    
