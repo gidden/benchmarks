@@ -36,7 +36,7 @@ def test_fac_translation():
     data = json.load(json_data)
     # note that data["recipes"] is an artifact required to print out the xml
     # nodes that will be fleshed out in higher-level objects
-    facs = readFacs(data["facilities"])#, data["recipes"])
+    facs = readFacs(data["facilities"])
     
     tree = etree.parse("input/test_fac.xml")
     root = etree.Element("root")
