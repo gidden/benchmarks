@@ -61,10 +61,10 @@
             "demands": {"power": ["GWe", ["lwr_reactor"]]}
 	},
 	"constraints": {
-            "grid": [0, 120],
+            "grid": [0, 100],
             "demands": {
-		"power": {
-                    "grid": [0, 120],
+		"lwr_reactor_power": {
+                    "grid": [0, 100],
                     "growth": {
 			"type": "linear",
 			"period1": {
