@@ -155,8 +155,7 @@ class CyclusReactorInfo(object):
     """ a simple holding class for non-specification related information that is
     still required by Cyclus to define its input
     """
-    def __init__(self, refuel_time = 0, prod_t = None): #recipeGuide, 
-        #self.recipeGuide = recipeGuide
+    def __init__(self, refuel_time = 0, prod_t = None): 
         self.refuel_time = refuel_time
         self.prod_t = prod_t
 
@@ -173,7 +172,6 @@ class JsonReactorParser(JsonFacilityParser):
         the specification language.
         """
         JsonFacilityParser.__init__(self,name,description)
-        #self._recipeGuide = extra_info.recipeGuide
         self._refuel_time = extra_info.refuel_time
         self._prod_t = extra_info.prod_t
 
@@ -238,7 +236,7 @@ def getParser(name, descr):
     if fac_t == "repository":
         return JsonRepositoryParser(name, descr)
     elif fac_t == "reactor":
-        prod_t = name + "_power"
+        prod_t = name + "_power" #default
         info = CyclusReactorInfo(prod_t = prod_t)
         return JsonReactorParser(name, descr, info)
     else:
