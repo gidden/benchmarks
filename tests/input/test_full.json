@@ -1,28 +1,18 @@
 {
     "materials": {
-	"mat1": {
-	    "attributes": {
-		"recipe": true
-	    }, 
-	    "constraints": [["U235", 4],
-			    ["U238", 96]]
-	}
-	"mat2": {
-	    "metadata": { 
-		"suggestedComposition": [["U235", 5], 
-					 ["U238", 95]]
-	    }
-	    "attributes": {
-		"recipe": false
-	    }, 
+	"leu": {
+	    "attributes": {"recipe": true},
+	    "constraints": [["U235", 4],["U238", 96]]
+	},
+	"used_leu": {
+	    "metadata": {"suggestedComposition": [["U235", 5], ["U238", 95]]},
+	    "attributes": {"recipe": false},
 	    "constraints": []
 	}
     },
     "facilities": {
 	"lwr_reactor": {
-	    "metadata": {
-		"type":"reactor"
-	    }
+	    "metadata": {"type":"reactor"},	    
 	    "attributes": {
 		"thermalPower": ["float", "GWt"],
 		"efficiency": ["float", "percent"],
@@ -33,7 +23,7 @@
 		"coreLoading": ["float", "kg", ["leu"]],
 		"burnup": ["float", "GWd/tHM", ["leu"]],
 		"storageTime": ["int", "year", ["leu"]],
-		"coolingTime": ["int", "year", ["leu"]],
+		"coolingTime": ["int", "year", ["leu"]]
 	    },
 	    "constraints": [
 		["thermalPower", 1],
@@ -50,13 +40,11 @@
 	    "outputs": ["used_leu"]
 	},
 	"lwr_repository": {
-	    "metadata": {
-		"type":"repository"
-	    }
+	    "metadata": {"type":"repository"},
 	    "attributes": {
 		"lifetime": ["int", "year"],
 		"capacity": ["double", "tHM/year"]
-	    }
+	    },
 	    "constraints": [
 		["lifetime", 60],
 		["capacity", 800]
@@ -68,12 +56,10 @@
 	"attributes": {
             "grid": "year",
             "initialConditions": {
-		"lwr_repository": 1,
+		"lwr_repository": 1
             },
-            "demands": {
-		"power": ["GWe", ["lwr_reactor"]]
-            }
-	}
+            "demands": {"power": ["GWe", ["lwr_reactor"]]}
+	},
 	"constraints": {
             "grid": [0, 120],
             "demands": {
