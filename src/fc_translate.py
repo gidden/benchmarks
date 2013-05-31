@@ -23,16 +23,6 @@ class CyclusFuelCycle(object):
             etree.tostring(self.growth, pretty_print = True) + "\n" \
             + "Producers: " + str(self.producers)
 
-class ExtraneousFCInfo(object):
-    """This is a container class that holds fuel cycle information required to
-    complete a Cyclus input file that is not directly related to the fuel cycle
-    specification. An example of such information is a mapping from facility
-    names or types in the specifications to specific Cyclus agent classes.
-    """
-    def __init__(self, fac_type_map):
-        # add additional objects to this interface as needed
-        self.fac_type_map = fac_type_map
-
 class SupportError(Exception):
     """Error for unsupported operations"""
     pass
@@ -42,14 +32,13 @@ class JsonFuelCycleParser(object):
     the fuel cycle from the FCS benchmark specification language and returns a
     cyclus-based representation of the fuel cycle
     """
-    def __init__(self, description, extra_info):
+    def __init__(self, description):
         """ Fuel Cycle parser constructor. Note that the additional argument
         extra_info provides an interface to the additional information required
         to complete a Cyclus fuel cycle description that is not required in the
         specification language.
         """
         self.__description = description
-        self.__extra_info = extra_info
         self.__default_agent_types = self.__getDefaultAgents()
 
     def __getDefaultParameters(self):
@@ -81,7 +70,8 @@ class JsonFuelCycleParser(object):
         units = self.__description["attributes"]["grid"]
         time = self.__description["constraints"]["grid"]
         diff = time[1] - time[0]
-        if units is "years":
+        years = ["year", "years"]
+        if units in years:
             diff *= 12
         return diff
 
@@ -109,7 +99,7 @@ class JsonFuelCycleParser(object):
             initial_conditions = \
                 self.__description["attributes"]["initialConditions"]
             root = etree.Element("initialfacilitylist")
-            fac_type_map = self.__extra_info.fac_type_map
+            #fac_type_map = self.__extra_info.fac_type_map
             for name, amount in initial_conditions.iteritems():
                 entry = etree.SubElement(root,"entry")
                 prototype = etree.SubElement(entry,"prototype")

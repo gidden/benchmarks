@@ -155,8 +155,7 @@ class CyclusReactorInfo(object):
     """ a simple holding class for non-specification related information that is
     still required by Cyclus to define its input
     """
-    def __init__(self, recipeGuide, refuel_time = 0, prod_t = None): 
-        self.recipeGuide = recipeGuide
+    def __init__(self, refuel_time = 0, prod_t = None): 
         self.refuel_time = refuel_time
         self.prod_t = prod_t
 
@@ -173,7 +172,6 @@ class JsonReactorParser(JsonFacilityParser):
         the specification language.
         """
         JsonFacilityParser.__init__(self,name,description)
-        self._recipeGuide = extra_info.recipeGuide
         self._refuel_time = extra_info.refuel_time
         self._prod_t = extra_info.prod_t
 
@@ -209,8 +207,8 @@ class JsonReactorParser(JsonFacilityParser):
         # get fuels
         imports = self._description["inputs"]
         exports = self._description["outputs"]
-        inrecipes = [self._recipeGuide[import_mat] for import_mat in imports]
-        outrecipes = [self._recipeGuide[export_mat] for export_mat in exports]
+        inrecipes = imports
+        outrecipes = exports
         in_core = float(self._params[self.tag_loading])
         out_core = in_core
         batches = int(self._params[self.tag_batch_n])
@@ -233,20 +231,20 @@ class JsonReactorParser(JsonFacilityParser):
         generator = ReactorGenerator(self._name,self._fac_t,fuels,schedule,production)
         return generator.node()
 
-def getParser(name, descr, recipes):
+def getParser(name, descr):
     fac_t = descr["metadata"]["type"]
     if fac_t == "repository":
         return JsonRepositoryParser(name, descr)
     elif fac_t == "reactor":
-        prod_t = name + "_power"
-        info = CyclusReactorInfo(recipes, prod_t = prod_t)
+        prod_t = name + "_power" #default
+        info = CyclusReactorInfo(prod_t = prod_t)
         return JsonReactorParser(name, descr, info)
     else:
         raise TypeError("Facility type " + fac_t + " is not supported.")
 
-def readFacs(json_obj, recipes):
+def readFacs(json_obj):
     facs = []
     for name, descr in json_obj.iteritems(): 
-        parser = getParser(name, descr, recipes)
+        parser = getParser(name, descr)
         facs.append(parser.parse())
     return facs

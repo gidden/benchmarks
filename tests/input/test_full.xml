@@ -34,7 +34,7 @@
   </market>
 
   <facility>
-    <name>source</name>
+    <name>source_leu</name>
     <model>
       <SourceFacility>
         <output>
@@ -61,13 +61,13 @@
         </fuel_output>
         <cyclelength>12</cyclelength>
         <refueldelay>0</refueldelay>
-        <incoreloading>100</incoreloading>
-        <outcoreloading>100</outcoreloading>
+        <incoreloading>100.0</incoreloading>
+        <outcoreloading>100.0</outcoreloading>
         <batchespercore>3</batchespercore>
         <commodity_production>
           <commodity>lwr_reactor_power</commodity>
-          <capacity>1</capacity>
-          <cost>1</cost>
+          <capacity>1.0</capacity>
+          <cost>1.0</cost>
         </commodity_production>
       </BatchReactor>
     </model>
@@ -82,18 +82,18 @@
       <SinkFacility>
         <input>
           <commodities>
-            <incommodity>waste</incommodity>
+            <incommodity>used_leu</incommodity>
           </commodities>
-          <input_capacity>800</input_capacity>
+          <input_capacity>800.0</input_capacity>
         </input>
       </SinkFacility>
     </model>
-    <incommodity>waste</incommodity>
+    <incommodity>used_leu</incommodity>
   </facility>
 
   <region>
     <name>region</name>
-    <allowedfacility>source</allowedfacility>
+    <allowedfacility>source_leu</allowedfacility>
     <allowedfacility>lwr_reactor</allowedfacility>
     <allowedfacility>lwr_repository</allowedfacility>
     <model>
@@ -110,12 +110,12 @@
     </model>
     <institution>
       <name>institution</name>
-      <availableprototype>source</availableprototype>
+      <availableprototype>source_leu</availableprototype>
       <availableprototype>lwr_reactor</availableprototype>
       <availableprototype>lwr_repository</availableprototype>
       <initialfacilitylist>
         <entry>
-          <prototype>source</prototype>
+          <prototype>source_leu</prototype>
           <number>1</number>
         </entry>
         <entry>
