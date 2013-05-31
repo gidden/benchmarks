@@ -28,10 +28,7 @@ def runtests(time_vars, initial_facs, growth_params):
 
     # observed
     fac_types = {}
-    for fac in initial_facs:
-        fac_types[fac.name] = fac.fac_t
-    extra_info = xlate.ExtraneousFCInfo(fac_types)
-    parser = xlate.JsonFuelCycleParser(description, extra_info)
+    parser = xlate.JsonFuelCycleParser(description)
     fc = parser.parse()
 
     # expected
