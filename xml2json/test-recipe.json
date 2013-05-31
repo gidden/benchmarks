@@ -1,0 +1,5 @@
+{"lwr_fuel": {
+    "metadata": {},
+    "attributes": {"recipe": true}, 
+    "constraints": [["U235", 4.0], ["U238", 96.0]]
+}}
