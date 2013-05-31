@@ -13,6 +13,7 @@ def compare_leaves(a, b, log = False):
     return str1 == str2
 
 def compare_nodes(a, b, log = False):
+    if a.tag != b.tag: return False
     if is_leaf(a) or is_leaf(b):
         if is_leaf(a) and is_leaf(b): return compare_leaves(a, b, log)
         else: return False
