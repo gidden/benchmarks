@@ -55,7 +55,7 @@ post-irradiation is generally not applicable.
 We define the materials specification as follows: ::
 
    * materials
-     * materialName1
+     * name1
        * metadata (optional)
       	 * suggestedComposition (optional)
            * isotope1
@@ -67,7 +67,7 @@ We define the materials specification as follows: ::
        * constraints
        	 * constraint1
        	 * constraint2...
-     * materialName2...
+     * name2...
 
 This specifications covers both cases described above. If a material is
 process-defined (i.e., it is not a recipe), the suggestedComposition structure
@@ -92,7 +92,7 @@ below ::
       "leu": {
           "attributes": {
               "recipe": true
-          }
+          },
           "constraints": [      
               ["U235", 0.0495],
               ["U238", 0.9505],
@@ -103,13 +103,13 @@ below ::
       "spent_pwr_uox": {
           "metadata": {
               "suggestedComposition": [
-                  ["U235",0.01],
+                  ["U235",0.02],
                   ...
               ]
-	  }
+	  },
           "attributes": {
               "recipe": false
-          }
+          },
           "constraints": [
               "id == 92235 && x < 0.0495",
               "id == 92238 && x < 0.9505",
@@ -154,7 +154,7 @@ blanket.
 
 We define the reactor specification as follows: ::
 
-   * reactorName1
+   * name
      * metadata (optional)
        * type: reactor
      * attributes
@@ -186,7 +186,6 @@ We define the reactor specification as follows: ::
        * storageTime: value, fuel2...
      * inputMaterials
      * outputMaterials
-   * reactorName2...
 
 In this specification, the units member is a pair of values stating the data
 type and units, for example::
@@ -212,7 +211,7 @@ An example of the specification implemented in JSON is shown below: ::
      "lwr_reactor": {
      	 "metadata": {
 	     "type":"reactor"
-	 }
+	 },
 	 "attributes": {
 	     "thermalPower": ["float", "GWt"],
 	     "efficiency": ["float", "percent"],
@@ -236,8 +235,8 @@ An example of the specification implemented in JSON is shown below: ::
 	     ["storageTime", 2, "leu"],
 	     ["coolingTime", 5, "leu"]
 	 ],
-	 "inputs": ["leu"],
-	 "outputs": ["used_leu"]
+	 "inputMaterials": ["leu"],
+	 "outputMaterials": ["used_leu"]
      }
 
 Repositories
@@ -248,7 +247,7 @@ fidelity can be provided by asserting a limit on the quantity or quality
 (e.g. radiotoxicity or thermal heat load) of the entering materials. Accordingly,
 a repository is specified as follows: ::
 
-   * repositoryName1
+   * name
      * metadata (optional)
        * type: repository
      * attributes
@@ -258,23 +257,68 @@ a repository is specified as follows: ::
        * capacity: value
        * lifetime: value
      * inputMaterials
-   * repositoryName2...
 
 An example of a specification implemented in JSON is shown below: ::
 
      "lwr_repository": {
      	 "metadata: {
 	     "type":"repository"
-	 }
+	 },
 	 "attributes": {
 	     "lifetime": ["int", "year"], 
 	     "capacity": ["double", "tHM/year"]
-	 }
+	 },
 	 "constraints": [
 	     ["lifetime", 60], 
              ["capacity", 800.0]
 	 ], 
-	 "inputs": ["used_leu"]
+	 "inputMaterials": ["used_leu"]
+      }
+
+Enrichment
+~~~~~~~~~~
+
+Enrichment facilities in simulations model the process of enriching
+Uranium. There is generally a capacity associated with such a process denoted in
+Separative Work Units (SWU). The process itself can be defined by the input
+material used (e.g. natural uranium) and the weight fraction of U-235 in the
+tails material (i.e., the un-enriched byproduct). As with all facilities, an
+operational lifetime can also be assigned.
+
+The specification for an enrichment facility is as follows: ::
+
+   * name
+     * metadata (optional)
+       * type: enrichment
+     * attributes
+       * capacity: units
+       * lifetime: units
+       * tailsFraction: units
+     * constraints
+       * capacity: value
+       * lifetime: value
+       * tailsFraction: value
+     * inputMaterials
+     * outputMaterials
+
+An example of a specification implemented in JSON is shown below: ::
+
+     "lwr_enrichment": {
+     	 "metadata: {
+	     "type":"enrichment"
+	 },
+	 "attributes": {
+	     "lifetime": ["int", "year"], 
+	     "capacity": ["double", "SWU/year"],
+	     "tailsFraction": ["double", "weight percent"]
+	 },
+	 "constraints": [
+	     ["lifetime", 60], 
+             ["capacity", 1e5]
+	     ["tailsFraction", 0.03]
+	 ], 
+	 "inputMaterials": ["natl_u"],
+	 "outputMaterials": ["leu", "tails"]
       }
 
 Reprocessing
@@ -282,34 +326,31 @@ Reprocessing
 
 Reprocessing plants are generally used in a simulation to recycle certain
 elemental groups to be reused as fuel, separating valuable, fissile isotopes
-(and their elemental family), from neutron poison isotopes. Accordingly,
-reprocessing plants must specify some number of elemental families and a
-corresponding separation efficiency. Furthermore, the facility is defined by a
-processing capacity and the temporal nature of the separations process is
-captured in a processing time member. A reprocessing facility is specified as
-follows: ::
+(and their elemental family), from isotopes that act as neutron
+poisons. Accordingly, reprocessing plants must specify some number of elemental
+families and a corresponding separation efficiency. Furthermore, the facility is
+defined by a processing capacity. 
 
-   * reprocessingName1
+A reprocessing facility is specified as follows: ::
+
+   * name
      * metadata (optional)
+       * type: reprocessing
      * attributes
        * capacityType: units
        * lifetime: units
-       * separationClasses:
-         * class1:
-	   * efficiency: units
-	 * class2...
+       * separationClass1:
+         * elements: elementSet
+         * efficiency: units
+       * separationClass2...
      * constraints
        * capacityType: value
        * lifetime: value
-       * separationClasses:
-         * class1:
-	   * efficiency: value
-	   * constitutents: values
-	 * class2...
+       * separationClass1:
+	 * efficiency: value
+       * separationClass2...
      * inputMaterials
      * outputMaterials
-   * repositoryName2...
-
 
 Advanced Fabrication
 ~~~~~~~~~~~~~~~~~~~~
@@ -318,14 +359,16 @@ Fabrication of advanced fuels, i.e., those using some amount of recycled
 material is required to model advanced fuel cycles. These fabrication facilities
 generally take some set of input separated elements and a filling fertile
 material (e.g. natural or depleted uranium), and output one or more advanced
-fuel types. The decision making algorithm of how much of each constituent to
-send to the facility and how to construct a given fuel type is generally
-simulation-engine specific. One can, however, specify connections and capacities
-as has been done in prior sections. An advanced fabrication facility is
-specified as follows: ::
+fuel types. The decision making algorithm to determine how much of each
+constituent to send to the facility and how to construct a given fuel type is
+generally simulation-engine specific. One can, however, specify connections and
+capacities as has been done in prior sections. 
 
-   * fabricatorName1
+An advanced fabrication facility is specified as follows: ::
+
+   * name
      * metadata (optional)
+       * type: advanced fabrication
      * attributes
        * capacities
          * capacityType1: units
@@ -340,7 +383,6 @@ specified as follows: ::
        * lifetime: value
      * inputMaterials
      * outputMaterials
-   * fabricatorName2...
 
 Fuel Cycle
 ++++++++++
@@ -370,7 +412,7 @@ We define the fuel cycle specification as follows: ::
 	* growth: description
       * demand2...
     * availableTechnologies (optional)
-      * technology: grid
+      * technology: period
 
 In general, the attributes and constraints of the fuelCycle data structure are
 pretty straightforward. Inclusive time periods as described as grids,
