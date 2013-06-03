@@ -24,7 +24,7 @@
 	    "constraints": ["tailsFraction": 0.2],
 	    "inputs": ["natl_u"],
 	    "outputs": ["nea_pwr_uox"],
-	}
+	},
 	"lwr_reactor": {
 	    "metadata": {"type": "reactor"},
 	    "attributes": {

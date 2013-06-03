@@ -1,0 +1,60 @@
+{
+    "attributes": {
+	"grid": "year",
+	"initialConditions": {
+	    "enrichment_fab": 1,
+	    "repository": 1,
+	},
+        "demands": {
+            "lwrPower": ["GWe", ["lwr_reactor"]],
+            "hwrPower": ["GWe", ["hwr_reactor"]]
+        }
+    }
+    "constraints": {
+        "grid": [0, 92],
+        "demands": {
+            "lwrPower": {
+                "grid": [0, 92],
+                "growth": {
+                    "type": "linear",
+                    "period1": {
+                        "startTime": 0,
+                        "startValue": 349.68,
+                        "slope": 10.364
+                    },
+                    "period2": {
+                        "startTime": 22,
+                        "startValue": 564,
+                        "slope": 20
+                    },
+                    "period3": {
+                        "startTime": 42,
+                        "startValue": 940,
+                        "slope": 30
+                    }
+		}
+            },
+	    "hwrPower": {
+                "grid": [0, 92],
+                "growth": {
+                    "type": "linear",
+                    "period1": {
+                        "startTime": 0,
+                        "startValue": 22.32,
+                        "slope": 10.364
+                    },
+                    "period2": {
+                        "startTime": 22,
+                        "startValue": 36,
+                        "slope": 20
+                    },
+                    "period3": {
+                        "startTime": 42,
+                        "startValue": 60,
+                        "slope": 30
+                    }
+                }
+            }
+        }
+    }
+}

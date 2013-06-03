@@ -1,0 +1,18 @@
+{
+    "lwr_used_fuel": {"attributes": {"recipe": false}, 
+			     "constraints": [], 
+			     "metadata": {"suggestedComposition": [["U235", 156.729], ["U236", 102.103], ["U238", 18280.324], ["NP237", 13.656], ["PU238", 5.043], ["PU239", 106.343], ["PU240", 41.357], ["PU241", 36.477], ["PU242", 15.387], ["AM241", 1.234], ["AM243", 3.607], ["CM244", 0.431], ["CM245", 1.263]]}
+			    }, 
+    "lwr_fuel": {"attributes": {"recipe": true}, 
+			"constraints": [["U235", 4.0], ["U238", 96.0]], 
+			"metadata": {}
+		       }, 
+    "hwr_used_fuel": {"attributes": {"recipe": false}, 
+			     "constraints": [], 
+			     "metadata": {"suggestedComposition": [["U235", 330.478], ["U236", 98.944], ["U238", 137171.079], ["NP237", 3.604], ["PU238", 0.459], ["PU239", 369.87], ["PU240", 133.16], ["PU241", 25.227], ["PU242", 5.468], ["AM241", 0.195], ["AM243", 0.167], ["CM244", 0.07], ["CM245", 0.014]]}
+			    }, 
+    "natl_u": {"attributes": {"recipe": true}, 
+	       "constraints": [["U235", 0.711], ["U238", 99.289]], 
+	       "metadata": {}
+	      }
+}
