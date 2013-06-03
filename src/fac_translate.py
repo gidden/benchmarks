@@ -216,7 +216,8 @@ class JsonReactorParser(JsonFacilityParser):
         fuels = ReactorFuels(imports,inrecipes,in_core,
                              exports,outrecipes,out_core,batches,burnup)
         
-        cycle = int(self._params[self.tag_cycle])
+        cycle = getCycleLength(self._description["attributes"], \
+                                   self._description["constraints"])
         lifetime = self._convertLifetime(int(self._params[self.tag_life]), \
                                              self._description["attributes"][self.tag_life][1])
         storage = int(self._params[self.tag_storage])
@@ -248,3 +249,24 @@ def readFacs(json_obj):
         parser = getParser(name, descr)
         facs.append(parser.parse())
     return facs
+
+class SomeError(Exception):
+    pass
+
+def getCycleLength(attributes, constraints):
+    
+    clunits = attributes["cycleLength"][1].lower()
+    for item in constraints:
+        if item[0] == "cycleLength": clval = int(item[1])
+        if item[0] == "capacityFactor": cfval = float(item[1])
+
+    if clval is None: raise ValueError("No cycle length value found")
+
+    months = ["month", "months"]
+    years = ["year", "years"]
+    efpd = ["efpd", "efpds"]
+    if clunits in months: return clval
+    elif clunits in years: return clval * 12
+    elif clunits in efpd:
+        return int( round( clval * (cfval / 100) / 365 * 12 ))
+    else: raise TypeError("Unsupported Cycle Length units: " + clunits)
