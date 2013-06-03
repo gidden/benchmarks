@@ -161,6 +161,7 @@ We define the reactor specification as follows: ::
        * thermalPower: units
        * efficiency: units
        * cycleLegth: units
+       * capacityFactor: units (required if cycleLength is given in EFPD)
        * lifetime: {units | distributed} 
        * fuelTypes: fuel1, fuel2..
        * batches: units, fuelTypes
@@ -172,6 +173,7 @@ We define the reactor specification as follows: ::
        * thermalPower: value
        * efficiency: value
        * cycleLegth: value
+       * capacityFactor: value (required if cycleLength is given in EFPD)
        * batches: value
        * lifetime: {value | distributed}
        * batches: value, fuel1
