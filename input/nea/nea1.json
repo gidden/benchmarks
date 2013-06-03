@@ -1,0 +1,95 @@
+{
+    "materials": {
+	"natl_u": {"attributes": {"recipe": true}, 
+		   "constraints": [["U234", 0.0445], ["U235", 0.7], ["U238", 99.2555]], 
+		   "metadata": {}
+		  }, 
+	"nea_pwr_uox": {"attributes": {"recipe": true}, 
+			"constraints": [["U234", 0.0445], ["U235", 4.95], ["U238", 95.0055]], 
+			"metadata": {}
+		       }, 
+	"nea_spent_pwr_uox": {"attributes": {"recipe": false}, 
+			      "constraints": [], 
+			      "metadata": {
+				  "suggestedComposition": [["U232", 2.78e-07], ["U233", 3.08e-07], ["U234", 0.0175], ["U235", 0.756], ["U236", 0.687], ["U238", 90.9], ["PU236", 6.53e-08], ["PU238", 0.0511], ["PU239", 0.637], ["PU240", 0.311], ["PU241", 0.153], ["PU242", 0.112], ["AM241", 0.0505], ["AM243", 0.0294], ["NP237", 0.0916], ["NP239", 2.52e-08], ["CM242", 1.89e-06], ["CM243", 0.000189], ["CM244", 0.0121], ["CM245", 0.00105], ["CM246", 0.000146], ["CM247", 2.87e-06], ["CM248", 4.9e-07]]
+			      }
+			     }
+    },
+    "facilities": {
+	"enrichment_fab": {
+	    "metadata": {
+		"type":"enrichment"
+	    }
+	    "attributes": {"tailsFraction": ["float", "weight percent"]},
+	    "constraints": ["tailsFraction": 0.2],
+	    "inputs": ["natl_u"],
+	    "outputs": ["nea_pwr_uox"],
+	}
+	"lwr_reactor": {
+	    "metadata": {"type": "reactor"},
+	    "attributes": {
+		"thermalPower": ["float", "GWt"],
+		"efficiency": ["float", "percent"],
+		"cycleLength": ["int", "EFPD"],
+		"capacityFactor": ["float", "percent"],
+		"lifetime": ["int", "year"],
+		"fuels": ["nea_pwr_uox"],
+		"batches": ["int", "", ["nea_pwr_uox"]],
+		"coreLoading": ["float", "tHM", ["nea_pwr_uox"]],
+		"burnup": ["float", "GWd/tHM", ["nea_pwr_uox"]],
+		"storageTime": ["int", "year", ["nea_pwr_uox"]],
+		"coolingTime": ["int", "year", ["nea_pwr_uox"]],
+	    },
+	    "constraints": [
+		["thermalPower", 4.412],
+		["efficiency", 34.0],
+		["cycleLength", 410],
+		["capacityFactor", 81.76],
+		["lifetime", 120],
+		["batches", 4, "nea_pwr_uox"],
+		["coreLoading", 120.6, "nea_pwr_uox"],
+		["burnup", 60, "nea_pwr_uox"],
+		["storageTime", 0, "nea_pwr_uox"],
+		["coolingTime", 5, "nea_pwr_uox"]
+	    ],
+	    "inputs": ["nea_pwr_uox"],
+	    "outputs": ["nea_spent_pwr_uox"]
+	},
+	"repository": {
+	    "metadata": {
+		"type":"repository"
+	    }
+	    "attributes": {}
+	    "constraints": [],
+	    "inputs": ["nea_spent_pwr_uox"]
+	}
+    }
+    "fuelCycle": {
+	"attributes": {
+            "grid": "year",
+            "initialConditions": {
+		"enrichment_fab": 1,
+		"repository": 1
+            },
+            "demands": {
+		"power": ["GWe", ["lwr_reactor"]]
+            }
+	}
+	"constraints": {
+            "grid": [0, 120],
+            "demands": {
+		"power": {
+                    "grid": [0, 120],
+                    "growth": {
+			"type": "linear",
+			"period1": {
+                            "startTime": 0,
+                            "startValue": 60,
+                            "slope": 0
+			}
+                    }
+		}
+            }
+	}
+    }
+}

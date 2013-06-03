@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root>
+  <recipe>
+    <name>nea_pwr_uox</name>
+    <basis>mass</basis>
+
+    <isotope>
+      <id>92234</id>
+      <comp>0.0445</comp>
+    </isotope>
+
+    <isotope>
+      <id>92235</id>
+      <comp>4.95</comp>
+    </isotope>
+
+    <isotope>
+      <id>92238</id>
+      <comp>95.0055</comp>
+    </isotope>
+  </recipe>
+</root>
