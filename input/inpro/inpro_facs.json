@@ -1,0 +1,79 @@
+{
+    "enrichment_fab": {
+	"metadata": {
+	    "type":"enrichment"
+	}
+	"attributes": {"tailsFraction": ["float", "weight percent"]},
+	"constraints": ["tailsFraction": 0.3],
+	"inputs": ["natl_u"],
+	"outputs": ["lwr_fuel"],
+    },
+    "lwr_reactor": {
+	    "metadata": {"type": "reactor"},
+	    "attributes": {
+		"thermalPower": ["float", "GWt"],
+		"efficiency": ["float", "percent"],
+		"cycleLength": ["int", "EFPD"],
+		"capacityFactor": ["float", "percent"],
+		"lifetime": ["int", "year"],
+		"fuels": ["lwr_fuel"],
+		"batches": ["int", "", ["lwr_fuel"]],
+		"coreLoading": ["float", "tHM", ["lwr_fuel"]],
+		"burnup": ["float", "GWd/tHM", ["lwr_fuel"]],
+		"storageTime": ["int", "year", ["lwr_fuel"]],
+		"coolingTime": ["int", "year", ["lwr_fuel"]],
+	    },
+	    "constraints": [
+		["thermalPower", 3030.3],
+		["efficiency", 33.0],
+		["cycleLength", 292],
+		["capacityFactor", 80.0],
+		["lifetime", 40],
+		["batches", 4, "lwr_fuel"],
+		["coreLoading", 78.653, "lwr_fuel"],
+		["burnup", 45, "lwr_fuel"],
+		["storageTime", 0, "lwr_fuel"],
+		["coolingTime", 6, "lwr_fuel"]
+	    ],
+	    "inputs": ["lwr_fuel"],
+	    "outputs": ["lwr_used_fuel"]
+    },
+    "hwr_reactor": {
+	    "metadata": {"type": "reactor"},
+	    "attributes": {
+		"thermalPower": ["float", "GWt"],
+		"efficiency": ["float", "percent"],
+		"cycleLength": ["int", "EFPD"],
+		"capacityFactor": ["float", "percent"],
+		"lifetime": ["int", "year"],
+		"fuels": ["hwr_fuel"],
+		"batches": ["int", "", ["hwr_fuel"]],
+		"coreLoading": ["float", "tHM", ["hwr_fuel"]],
+		"burnup": ["float", "GWd/tHM", ["hwr_fuel"]],
+		"storageTime": ["int", "year", ["hwr_fuel"]],
+		"coolingTime": ["int", "year", ["hwr_fuel"]],
+	    },
+	    "constraints": [
+		["thermalPower", 2000.0],
+		["efficiency", 30.0],
+		["cycleLength", 292],
+		["capacityFactor", 80.0],
+		["lifetime", 40],
+		["batches", 1, "hwr_fuel"],
+		["coreLoading", 139.05, "hwr_fuel"],
+		["burnup", 7, "hwr_fuel"],
+		["storageTime", 0, "hwr_fuel"],
+		["coolingTime", 6, "hwr_fuel"]
+	    ],
+	    "inputs": ["hwr_fuel"],
+	    "outputs": ["hwr_used_fuel"]
+    },
+    "repository": {
+	"metadata": {
+	    "type":"repository"
+	}
+	"attributes": {}
+	"constraints": [],
+	"inputs": ["lwr_used_fuel, hwr_used_fuel"]
+    }
+}
