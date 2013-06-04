@@ -1,4 +1,22 @@
 <root>
+
+  <facility>
+    <name>enrichment_fab</name>
+    <model>
+      <EnrichmentFacility>
+        <input>
+          <incommodity>natl_u</incommodity>
+          <inrecipe>natl_u</inrecipe>
+        </input>
+        <output>
+          <outcommodity>leu</outcommodity>
+          <tails_assay>0.003</tails_assay>
+        </output>
+      </EnrichmentFacility>
+    </model>
+    <incommodity>natl_u</incommodity>
+    <outcommodity>leu</outcommodity>
+  </facility>
   
   <facility>
     <name>lwr_reactor</name>

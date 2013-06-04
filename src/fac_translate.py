@@ -78,17 +78,99 @@ class JsonFacilityParser(object):
         production = self._getProduction()
         return CyclusFacility(self._name,self._fac_t,imports,exports,production,node)
 
+class JsonEnrichmentParser(JsonFacilityParser):
+    """ A parser that accepts a python-based json object representation of
+    enrichment facilities from the FCS benchmark specification language and
+    returns a cyclus-based representation of the facility.
+    """
+
+    def __init__(self, name, description):
+        JsonFacilityParser.__init__(self,name,description)
+
+    def _setTags(self):
+        """These tags correspond to the json implementation's parameter naming
+        conventions.  They are defined here so that they only need to be defined
+        in one place.
+        """
+        self.tag_tails = "tailsFraction"
+        self.tag_life = "lifetime"
+        self.tag_capacity = "capacity"
+
+    def _setParams(self):
+        """The json spec implementation lists parameter values as a list. It's
+        easier to use them as a dictionary, so we'll do that.
+        """
+        constrs = self._description["constraints"]
+        for constr in constrs:
+            self._params[constr[0]] = constr[1]
+
+    def _getNode(self):
+        # initialize parameters
+        inputs = self._description["inputs"]
+        if len(inputs) > 1: raise NotImplementedError("Enrichment facs can't take more than one input.")
+        outputs = self._description["outputs"]
+        if "lifetime" in self._description["attributes"]:
+            lifetime = self._convertLifetime(int(self._params[self.tag_life]), \
+                                                 self._description["attributes"][self.tag_life][1])
+        else:
+            lifetime = None
+        if self.tag_capacity in self._description["attributes"]:
+            capacity = float(self._params[self.tag_capacity])
+        else:
+            capacity = None
+        if self.tag_tails in self._description["attributes"]:
+            tails = float(self._params[self.tag_tails]) / 100 # e.g. 80% to 0.8
+        else:
+            tails = None
+        
+        return self.__constructNode(inputs, outputs, lifetime, capacity, tails)
+
+    def _getProduction(self):
+        """returns 0 by default, subclasses can override"""        
+        if self.tag_capacity in self._params:
+            return self._params[self.tag_capacity]
+        else:
+            return 0.0
+
+    def __constructNode(self, inputs, outputs, lifetime, capacity, tails):
+        root = etree.Element("facility")
+        elname = etree.SubElement(root,"name")
+        elname.text = self._name
+        if lifetime is not None:
+            ellife = etree.SubElement(root,"lifetime")
+            ellife.text = str(lifetime)    
+        elmodel = etree.SubElement(root,"model")
+        elclass = etree.SubElement(elmodel,"EnrichmentFacility")
+        
+        elin = etree.SubElement(elclass,"input")
+        elincommod = etree.SubElement(elin,"incommodity")
+        elincommod.text = inputs[0] # hack
+        elinrecipe = etree.SubElement(elin,"inrecipe")
+        elinrecipe.text = inputs[0] # hack
+        
+        elout = etree.SubElement(elclass,"output")
+        eloutcommod = etree.SubElement(elout,"outcommodity")
+        eloutcommod.text = outputs[0] # hack
+        eltails = etree.SubElement(elout,"tails_assay")
+        eltails.text = str(tails)
+        
+        if capacity is not None:
+            elcapacity = etree.SubElement(elin,"input_capacity")
+            elcapacity.text = str(capacity)
+        for i in range(len(inputs)):
+            elincommod = etree.SubElement(root,"incommodity")
+            elincommod.text = inputs[i]
+        for i in range(len(outputs)):
+            eloutcommod = etree.SubElement(root,"outcommodity")
+            eloutcommod.text = outputs[i]
+        return root
+
 class JsonRepositoryParser(JsonFacilityParser):
     """ A parser that accepts a python-based json object representation of
     repositories from the FCS benchmark specification language and returns a
     cyclus-based representation of the facility.
     """
     def __init__(self, name, description):
-        """ Reactor Parser constructor. Note that the additional argument
-        provides an interface to the additional information required to make a
-        Cyclus reactor object that is not needed to specify a reactor object in
-        the specification language.
-        """
         JsonFacilityParser.__init__(self,name,description)
 
     def _setTags(self):
@@ -236,6 +318,8 @@ def getParser(name, descr):
     fac_t = descr["metadata"]["type"]
     if fac_t == "repository":
         return JsonRepositoryParser(name, descr)
+    if fac_t == "enrichment":
+        return JsonEnrichmentParser(name, descr)
     elif fac_t == "reactor":
         prod_t = name + "_power" #default
         info = CyclusReactorInfo(prod_t = prod_t)

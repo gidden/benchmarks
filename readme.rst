@@ -316,7 +316,7 @@ An example of a specification implemented in JSON is shown below: ::
 	 },
 	 "constraints": [
 	     ["lifetime", 60], 
-             ["capacity", 1e5]
+             ["capacity", 1e5],
 	     ["tailsFraction", 0.03]
 	 ], 
 	 "inputMaterials": ["natl_u"],

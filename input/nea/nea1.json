@@ -19,11 +19,11 @@
 	"enrichment_fab": {
 	    "metadata": {
 		"type":"enrichment"
-	    }
+	    },
 	    "attributes": {"tailsFraction": ["float", "weight percent"]},
-	    "constraints": ["tailsFraction": 0.2],
+	    "constraints": [["tailsFraction", 0.2]],
 	    "inputs": ["natl_u"],
-	    "outputs": ["nea_pwr_uox"],
+	    "outputs": ["nea_pwr_uox"]
 	},
 	"lwr_reactor": {
 	    "metadata": {"type": "reactor"},
