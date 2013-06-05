@@ -4,9 +4,11 @@ import sys
 sys.path.append("../src")
 
 import fac_translate as ft
+import input_compiler as ic
 
 # test packages
 from nose.tools import assert_equal, assert_raises, eq_, raises
+from sets import Set
 # ------------------------------------------------------------------------------
 
 class CycleDescription(object):
@@ -53,3 +55,22 @@ def test_cycle_length():
 def test_cycle_err():
     descr4 = CycleDescription("notaunit", 12)
     ft.getCycleLength(descr4.attrs(), descr4.constrs())
+
+def test_source_commods():
+    imports = Set(["a"])
+    exports = Set(["a"])
+    exp = Set([])
+    obs = ic.getSourceCommods(imports, exports)
+    assert_equal(obs, exp)
+
+    imports = Set(["a", "b"])
+    exports = Set(["b"])
+    exp = Set(["a"])
+    obs = ic.getSourceCommods(imports, exports)
+    assert_equal(obs, exp)
+
+    imports = Set(["a", "a", "b"])
+    exports = Set(["b"])
+    exp = Set(["a"])
+    obs = ic.getSourceCommods(imports, exports)
+    assert_equal(obs, exp)
