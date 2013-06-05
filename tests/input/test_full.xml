@@ -45,6 +45,19 @@
     </model>
     <outcommodity>leu</outcommodity>
   </facility>
+
+  <facility>
+    <name>source_test</name>
+    <model>
+      <SourceFacility>
+        <output>
+          <outcommodity>test</outcommodity>
+          <recipe>test</recipe>
+        </output>
+      </SourceFacility>
+    </model>
+    <outcommodity>test</outcommodity>
+  </facility>
     
   <facility>
     <name>lwr_reactor</name>
@@ -61,13 +74,13 @@
         </fuel_output>
         <cyclelength>12</cyclelength>
         <refueldelay>0</refueldelay>
-        <incoreloading>100.0</incoreloading>
-        <outcoreloading>100.0</outcoreloading>
+        <incoreloading>1.000e+02</incoreloading>
+        <outcoreloading>1.000e+02</outcoreloading>
         <batchespercore>3</batchespercore>
         <commodity_production>
           <commodity>lwr_reactor_power</commodity>
-          <capacity>1.0</capacity>
-          <cost>1.0</cost>
+          <capacity>800.0</capacity>
+          <cost>800.0</cost>
         </commodity_production>
       </BatchReactor>
     </model>
@@ -83,17 +96,20 @@
         <input>
           <commodities>
             <incommodity>used_leu</incommodity>
+            <incommodity>test</incommodity>
           </commodities>
           <input_capacity>800.0</input_capacity>
         </input>
       </SinkFacility>
     </model>
     <incommodity>used_leu</incommodity>
+    <incommodity>test</incommodity>
   </facility>
 
   <region>
     <name>region</name>
     <allowedfacility>source_leu</allowedfacility>
+    <allowedfacility>source_test</allowedfacility>
     <allowedfacility>lwr_reactor</allowedfacility>
     <allowedfacility>lwr_repository</allowedfacility>
     <model>
@@ -102,8 +118,13 @@
           <name>lwr_reactor_power</name>
           <demand>
             <type>linear</type>
-            <parameters>500 1000</parameters>
+            <parameters>166.67 100000.0</parameters>
             <start_time>0</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>333.33 0.0</parameters>
+            <start_time>600</start_time>
           </demand>
         </commodity>
       </GrowthRegion>
@@ -111,11 +132,16 @@
     <institution>
       <name>institution</name>
       <availableprototype>source_leu</availableprototype>
+      <availableprototype>source_test</availableprototype>
       <availableprototype>lwr_reactor</availableprototype>
       <availableprototype>lwr_repository</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>source_leu</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>source_test</prototype>
           <number>1</number>
         </entry>
         <entry>

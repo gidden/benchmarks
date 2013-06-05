@@ -108,18 +108,18 @@ class JsonFuelCycleParser(object):
                 number.text = str(amount)
         return root
 
-    def __addGrowthNode(self,root,dem_t,values):
+    def __addGrowthNode(self, root, dem_t, values):
         """Constructs a single demand node
         """
         demand = etree.SubElement(root,"demand")
         eltype = etree.SubElement(demand,"type")
         eltype.text = dem_t
         params = etree.SubElement(demand,"parameters")
-        params.text = str(values["slope"]) 
+        params.text = "%.2f" % values["slope"]
         if "startValue" in values:
-            params.text +=  " " +str(values["startValue"])
+            params.text +=  " %.1f" % values["startValue"]
         else:
-            params.text += " 0"
+            params.text += " 0.0"
         time = etree.SubElement(demand,"start_time")
         time.text = str(values["startTime"])
 
@@ -137,7 +137,14 @@ class JsonFuelCycleParser(object):
             n = len(dic[key]["growth"]) - 1
             for i in range(n):
                 name = "period" + str(i+1)
-                self.__addGrowthNode(commod,"linear",dic[key]["growth"][name])
+                values = {}
+                timeunits = self.__description["attributes"]["grid"]
+                powerunits = self.__description["attributes"]["demands"][key][0]
+                values["startTime"] = getMonth(timeunits, dic[key]["growth"][name]["startTime"])
+                values["slope"] = convertSlope(timeunits, powerunits, dic[key]["growth"][name]["slope"])
+                if i == 0:
+                    values["startValue"] = getPower(powerunits, dic[key]["growth"][name]["startValue"])
+                self.__addGrowthNode(commod,"linear",values)
         return root
 
     def __constructProducers(self):
@@ -159,3 +166,22 @@ class JsonFuelCycleParser(object):
         growth = self.__constructGrowth()
         producers = self.__constructProducers()
         return CyclusFuelCycle(info, ics, growth, producers)
+
+def getMonth(units, value):
+    years = ["year", "years"]
+    if units.lower() in years: value *= 12
+    return value
+
+def getPower(units, value):
+    gw = ["gw", "gwe"]
+    if units.lower() in gw: value *= 1000.0
+    return value
+    
+def convertSlope(timeunits, powerunits, value):
+    years = ["year", "years"]
+    gw = ["gw", "gwe"]
+
+    if powerunits.lower() in gw: value *= 1000.0
+    if timeunits.lower() in years: value /= 12
+
+    return value

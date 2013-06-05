@@ -33,13 +33,13 @@
         </fuel_output>
         <cyclelength>12</cyclelength>
         <refueldelay>0</refueldelay>
-        <incoreloading>100.0</incoreloading>
-        <outcoreloading>100.0</outcoreloading>
+        <incoreloading>1.000e+02</incoreloading>
+        <outcoreloading>1.000e+02</outcoreloading>
         <batchespercore>3</batchespercore>
         <commodity_production>
           <commodity>lwr_reactor_power</commodity>
-          <capacity>1.0</capacity>
-          <cost>1.0</cost>
+          <capacity>1000.0</capacity>
+          <cost>1000.0</cost>
         </commodity_production>
       </BatchReactor>
     </model>
@@ -55,12 +55,14 @@
         <input>
           <commodities>
             <incommodity>used_leu</incommodity>
+            <incommodity>test</incommodity>
           </commodities>
           <input_capacity>800.0</input_capacity>
         </input>
       </SinkFacility>
     </model>
     <incommodity>used_leu</incommodity>
+    <incommodity>test</incommodity>
   </facility>
 
 </root>

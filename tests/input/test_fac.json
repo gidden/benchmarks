@@ -27,7 +27,7 @@
 	    },
 	    "constraints": [
 		["thermalPower", 1],
-		["efficiency", 1],
+		["efficiency", 100],
 		["cycleLength", 12],
 		["lifetime", 60],
 		["batches", 3, "leu"],
@@ -51,8 +51,7 @@
 		["lifetime", 60],
 		["capacity", 800]
 	    ],
-	    "inputs": ["used_leu"]
+	    "inputs": ["used_leu", "test"]
 	}
-    },
-    "recipes": {"leu":"leu","used_leu":"used_leu"}
+    }
 }

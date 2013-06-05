@@ -9,6 +9,15 @@ except ImportError:
     import json
 from lxml import etree
 
+from sets import Set
+
+def getSourceCommods(all_imports, all_exports):
+    for export in all_exports:
+        while export in all_imports:
+            if export in all_imports: 
+                all_imports.remove(export)
+    return all_imports
+
 class CyclusTranslator(object):
     """This class takes a set of conditioned input parameters for materials,
     facilities, and general fuel cycle information from helper classes and
@@ -44,20 +53,17 @@ class CyclusTranslator(object):
 
     def constructSources(self):
         sources = []
-        commods = self.getSourceCommods()
+        all_imports = Set()
+        all_exports = Set()
+        for fac in self.facs:
+            for i in fac.imports: 
+                all_imports.add(i)
+            for j in fac.exports: 
+                all_exports.add(j)
+        commods = getSourceCommods(all_imports, all_exports)
         for commod in commods: 
             sources.append(self.constructSource(commod))
         return sources
-
-    def getSourceCommods(self):
-        all_imports = []
-        all_exports = []
-        for fac in self.facs:
-            all_imports += fac.imports
-            all_exports += fac.exports
-        for export in all_exports:
-            if export in all_imports: all_imports.remove(export)
-        return all_imports
 
     def constructSource(self, commod):
         name = "source_" + commod

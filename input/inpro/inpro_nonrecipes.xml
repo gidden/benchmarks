@@ -1,6 +1,6 @@
 <root>
   <recipe>
-    <name>lwr_used_fuel_recipe</name>
+    <name>lwr_used_fuel</name>
     <basis>mass</basis>
     <isotope>
       <id>92235</id>
@@ -61,7 +61,7 @@
   </recipe>
 
   <recipe>
-    <name>hwr_used_fuel_recipe</name>
+    <name>hwr_used_fuel</name>
     <basis>mass</basis>
     <isotope>
       <id>92235</id>
