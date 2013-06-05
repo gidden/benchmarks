@@ -13,7 +13,7 @@ class CyclusFacility(object):
         self.exports = exports
         self.production = production
         self.node = node
-
+        
     def __str__(self):
         return "Name: " + self.name + "\n" \
             + "Node: \n" + etree.tostring(self.node, pretty_print = True)
@@ -306,8 +306,9 @@ class JsonReactorParser(JsonFacilityParser):
         cooling = int(self._params[self.tag_cooling])
         schedule = ReactorSchedule(cycle,self._refuel_time,lifetime,storage,cooling)
         
-        eff = float(self._params[self.tag_eff])
-        capacity = eff * float(self._params[self.tag_pwr])
+        eff = float(self._params[self.tag_eff]) / 100.0
+        powerunits = self._description["attributes"][self.tag_pwr][1]
+        capacity = round(getPower(powerunits[:2], eff * float(self._params[self.tag_pwr])))
         if self._prod_t is None:
             self._prod_t = "power"
         production = ReactorProduction(self._prod_t,capacity,eff)
@@ -331,11 +332,16 @@ def readFacs(json_obj):
     facs = []
     for name, descr in json_obj.iteritems(): 
         parser = getParser(name, descr)
-        facs.append(parser.parse())
+        fac = parser.parse()
+        facs.append(fac)
     return facs
 
-class SomeError(Exception):
-    pass
+def getPower(units, value):
+    gw = ["gw"]
+    if units.lower() in gw:
+        value *= 1000
+    print units, value
+    return value
 
 def getCycleLength(attributes, constraints):
     

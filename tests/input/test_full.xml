@@ -79,8 +79,8 @@
         <batchespercore>3</batchespercore>
         <commodity_production>
           <commodity>lwr_reactor_power</commodity>
-          <capacity>1.0</capacity>
-          <cost>1.0</cost>
+          <capacity>800.0</capacity>
+          <cost>800.0</cost>
         </commodity_production>
       </BatchReactor>
     </model>
