@@ -291,7 +291,8 @@ class JsonReactorParser(JsonFacilityParser):
         exports = self._description["outputs"]
         inrecipes = imports
         outrecipes = exports
-        in_core = float(self._params[self.tag_loading])
+        loadingunits = self._description["attributes"][self.tag_loading][1]
+        in_core = getLoading(loadingunits[0], float(self._params[self.tag_loading]))
         out_core = in_core
         batches = int(self._params[self.tag_batch_n])
         burnup = float(self._params[self.tag_bu])        
@@ -340,7 +341,12 @@ def getPower(units, value):
     gw = ["gw"]
     if units.lower() in gw:
         value *= 1000
-    print units, value
+    return value
+
+def getLoading(units, value):
+    tons = ["t", "ton", "tons"]
+    if units.lower() in tons:
+        value *= 1000
     return value
 
 def getCycleLength(attributes, constraints):
@@ -358,5 +364,5 @@ def getCycleLength(attributes, constraints):
     if clunits in months: return clval
     elif clunits in years: return clval * 12
     elif clunits in efpd:
-        return int( round( clval * (cfval / 100) / 365 * 12 ))
+        return int( round( clval / (cfval / 100) / 365 * 12 ))
     else: raise TypeError("Unsupported Cycle Length units: " + clunits)

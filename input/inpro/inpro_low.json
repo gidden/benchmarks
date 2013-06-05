@@ -40,7 +40,7 @@
 		"coreLoading": ["float", "tHM", ["lwr_fuel"]],
 		"burnup": ["float", "GWd/tHM", ["lwr_fuel"]],
 		"storageTime": ["int", "year", ["lwr_fuel"]],
-		"coolingTime": ["int", "year", ["lwr_fuel"]],
+		"coolingTime": ["int", "year", ["lwr_fuel"]]
 	    },
 	    "constraints": [
 		["thermalPower", 3030.3],
@@ -70,7 +70,7 @@
 		"coreLoading": ["float", "tHM", ["hwr_fuel"]],
 		"burnup": ["float", "GWd/tHM", ["hwr_fuel"]],
 		"storageTime": ["int", "year", ["hwr_fuel"]],
-		"coolingTime": ["int", "year", ["hwr_fuel"]],
+		"coolingTime": ["int", "year", ["hwr_fuel"]]
 	    },
 	    "constraints": [
 		["thermalPower", 2000.0],
@@ -90,8 +90,8 @@
 	"repository": {
 	    "metadata": {
 		"type":"repository"
-	    }
-	    "attributes": {}
+	    },
+	    "attributes": {},
 	    "constraints": [],
 	    "inputs": ["lwr_used_fuel, hwr_used_fuel"]
 	}
@@ -101,13 +101,13 @@
 	    "grid": "year",
 	    "initialConditions": {
 		"enrichment_fab": 1,
-		"repository": 1,
+		"repository": 1
 	    },
             "demands": {
 		"lwrPower": ["GWe", ["lwr_reactor"]],
 		"hwrPower": ["GWe", ["hwr_reactor"]]
             }
-	}
+	},
 	"constraints": {
             "grid": [0, 92],
             "demands": {

@@ -49,6 +49,16 @@ def test_full_translation():
     data = json.load(json_data)
     xlator = CyclusTranslator(data)
     tree = etree.parse("input/test_full.xml")
-    print etree.tostring(xlator.translate(), pretty_print = True)
+    #print etree.tostring(xlator.translate(), pretty_print = True)
+    assert_true(compare_nodes(xlator.translate(), tree.getroot(), log = False))
+    
+def test_inpro_translation():
+    json_data = open("input/inpro_low.json")
+    data = json.load(json_data)
+    xlator = CyclusTranslator(data)
+    tree = etree.parse("input/inpro_low.xml")
+    #print etree.tostring(xlator.translate(), pretty_print = True)
+    # #print "\n"
+    #print etree.tostring(tree.getroot(), pretty_print = True)
     assert_true(compare_nodes(xlator.translate(), tree.getroot(), log = False))
     
