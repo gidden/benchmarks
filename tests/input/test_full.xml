@@ -102,8 +102,13 @@
           <name>lwr_reactor_power</name>
           <demand>
             <type>linear</type>
-            <parameters>500 1000</parameters>
+            <parameters>166.67 100000.0</parameters>
             <start_time>0</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>333.33 0.0</parameters>
+            <start_time>600</start_time>
           </demand>
         </commodity>
       </GrowthRegion>

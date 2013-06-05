@@ -58,7 +58,7 @@
             "initialConditions": {
 		"lwr_repository": 1
             },
-            "demands": {"power": ["GWe", ["lwr_reactor"]]}
+            "demands": {"lwr_reactor_power": ["GWe", ["lwr_reactor"]]}
 	},
 	"constraints": {
             "grid": [0, 100],
@@ -69,8 +69,13 @@
 			"type": "linear",
 			"period1": {
                             "startTime": 0,
-                            "startValue": 1000,
-                            "slope": 500
+                            "startValue": 100,
+                            "slope": 2
+			},
+			"period2": {
+                            "startTime": 50,
+                            "startValue": 200,
+                            "slope": 4
 			}
                     }
 		}
