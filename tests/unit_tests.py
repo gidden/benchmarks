@@ -69,6 +69,12 @@ def test_source_commods():
     obs = ic.getSourceCommods(imports, exports)
     assert_equal(obs, exp)
 
+    imports = Set(["a", "b", "c"])
+    exports = Set(["b"])
+    exp = Set(["a", "c"])
+    obs = ic.getSourceCommods(imports, exports)
+    assert_equal(obs, exp)
+
     imports = Set(["a", "a", "b"])
     exports = Set(["b"])
     exp = Set(["a"])

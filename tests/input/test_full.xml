@@ -45,6 +45,19 @@
     </model>
     <outcommodity>leu</outcommodity>
   </facility>
+
+  <facility>
+    <name>source_test</name>
+    <model>
+      <SourceFacility>
+        <output>
+          <outcommodity>test</outcommodity>
+          <recipe>test</recipe>
+        </output>
+      </SourceFacility>
+    </model>
+    <outcommodity>test</outcommodity>
+  </facility>
     
   <facility>
     <name>lwr_reactor</name>
@@ -83,17 +96,20 @@
         <input>
           <commodities>
             <incommodity>used_leu</incommodity>
+            <incommodity>test</incommodity>
           </commodities>
           <input_capacity>800.0</input_capacity>
         </input>
       </SinkFacility>
     </model>
     <incommodity>used_leu</incommodity>
+    <incommodity>test</incommodity>
   </facility>
 
   <region>
     <name>region</name>
     <allowedfacility>source_leu</allowedfacility>
+    <allowedfacility>source_test</allowedfacility>
     <allowedfacility>lwr_reactor</allowedfacility>
     <allowedfacility>lwr_repository</allowedfacility>
     <model>
@@ -116,11 +132,16 @@
     <institution>
       <name>institution</name>
       <availableprototype>source_leu</availableprototype>
+      <availableprototype>source_test</availableprototype>
       <availableprototype>lwr_reactor</availableprototype>
       <availableprototype>lwr_repository</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>source_leu</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>source_test</prototype>
           <number>1</number>
         </entry>
         <entry>

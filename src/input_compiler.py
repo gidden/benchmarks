@@ -56,8 +56,10 @@ class CyclusTranslator(object):
         all_imports = Set()
         all_exports = Set()
         for fac in self.facs:
-            for i in fac.imports: all_imports.add(i)
-            for j in fac.exports: all_exports.add(i)
+            for i in fac.imports: 
+                all_imports.add(i)
+            for j in fac.exports: 
+                all_exports.add(j)
         commods = getSourceCommods(all_imports, all_exports)
         for commod in commods: 
             sources.append(self.constructSource(commod))

@@ -49,7 +49,7 @@
 		["lifetime", 60],
 		["capacity", 800]
 	    ],
-	    "inputs": ["used_leu"]
+	    "inputs": ["used_leu", "test"]
 	}
     },
     "fuelCycle": {

@@ -55,12 +55,14 @@
         <input>
           <commodities>
             <incommodity>used_leu</incommodity>
+            <incommodity>test</incommodity>
           </commodities>
           <input_capacity>800.0</input_capacity>
         </input>
       </SinkFacility>
     </model>
     <incommodity>used_leu</incommodity>
+    <incommodity>test</incommodity>
   </facility>
 
 </root>

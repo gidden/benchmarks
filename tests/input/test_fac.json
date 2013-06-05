@@ -51,8 +51,7 @@
 		["lifetime", 60],
 		["capacity", 800]
 	    ],
-	    "inputs": ["used_leu"]
+	    "inputs": ["used_leu", "test"]
 	}
-    },
-    "recipes": {"leu":"leu","used_leu":"used_leu"}
+    }
 }
