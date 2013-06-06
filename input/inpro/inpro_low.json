@@ -43,13 +43,13 @@
 		"coolingTime": ["int", "year", ["lwr_fuel"]]
 	    },
 	    "constraints": [
-		["thermalPower", 3030.3],
+		["thermalPower", 3.0303],
 		["efficiency", 33.0],
 		["cycleLength", 292],
 		["capacityFactor", 80.0],
 		["lifetime", 40],
 		["batches", 4, "lwr_fuel"],
-		["coreLoading", 78.653, "lwr_fuel"],
+		["coreLoading", 78.71, "lwr_fuel"],
 		["burnup", 45, "lwr_fuel"],
 		["storageTime", 0, "lwr_fuel"],
 		["coolingTime", 6, "lwr_fuel"]
@@ -65,26 +65,26 @@
 		"cycleLength": ["int", "EFPD"],
 		"capacityFactor": ["float", "percent"],
 		"lifetime": ["int", "year"],
-		"fuels": ["hwr_fuel"],
-		"batches": ["int", "", ["hwr_fuel"]],
-		"coreLoading": ["float", "tHM", ["hwr_fuel"]],
-		"burnup": ["float", "GWd/tHM", ["hwr_fuel"]],
-		"storageTime": ["int", "year", ["hwr_fuel"]],
-		"coolingTime": ["int", "year", ["hwr_fuel"]]
+		"fuels": ["natl_u"],
+		"batches": ["int", "", ["natl_u"]],
+		"coreLoading": ["float", "tHM", ["natl_u"]],
+		"burnup": ["float", "GWd/tHM", ["natl_u"]],
+		"storageTime": ["int", "year", ["natl_u"]],
+		"coolingTime": ["int", "year", ["natl_u"]]
 	    },
 	    "constraints": [
-		["thermalPower", 2000.0],
+		["thermalPower", 2.0],
 		["efficiency", 30.0],
 		["cycleLength", 292],
 		["capacityFactor", 80.0],
 		["lifetime", 40],
-		["batches", 1, "hwr_fuel"],
-		["coreLoading", 139.05, "hwr_fuel"],
-		["burnup", 7, "hwr_fuel"],
-		["storageTime", 0, "hwr_fuel"],
-		["coolingTime", 6, "hwr_fuel"]
+		["batches", 1, "natl_u"],
+		["coreLoading", 139.1, "natl_u"],
+		["burnup", 7, "natl_u"],
+		["storageTime", 0, "natl_u"],
+		["coolingTime", 6, "natl_u"]
 	    ],
-	    "inputs": ["hwr_fuel"],
+	    "inputs": ["natl_u"],
 	    "outputs": ["hwr_used_fuel"]
 	},
 	"repository": {
@@ -93,7 +93,7 @@
 	    },
 	    "attributes": {},
 	    "constraints": [],
-	    "inputs": ["lwr_used_fuel, hwr_used_fuel"]
+	    "inputs": ["lwr_used_fuel", "hwr_used_fuel"]
 	}
     },
     "fuelCycle": {
@@ -104,52 +104,52 @@
 		"repository": 1
 	    },
             "demands": {
-		"lwrPower": ["GWe", ["lwr_reactor"]],
-		"hwrPower": ["GWe", ["hwr_reactor"]]
+		"lwr_reactor_power": ["GWe", ["lwr_reactor"]],
+		"hwr_reactor_power": ["GWe", ["hwr_reactor"]]
             }
 	},
 	"constraints": {
             "grid": [0, 92],
             "demands": {
-		"lwrPower": {
+		"lwr_reactor_power": {
                     "grid": [0, 92],
                     "growth": {
 			"type": "linear",
 			"period1": {
                             "startTime": 0,
                             "startValue": 349.68,
-                            "slope": 10.364
+                            "slope": 9.742
 			},
 			"period2": {
                             "startTime": 22,
                             "startValue": 564,
-                            "slope": 20
+                            "slope": 18.8
 			},
 			"period3": {
                             "startTime": 42,
                             "startValue": 940,
-                            "slope": 30
+                            "slope": 28.2
 			}
 		    }
 		},
-		"hwrPower": {
+		"hwr_reactor_power": {
                     "grid": [0, 92],
                     "growth": {
 			"type": "linear",
 			"period1": {
                             "startTime": 0,
                             "startValue": 22.32,
-                            "slope": 10.364
+                            "slope": 0.622
 			},
 			"period2": {
                             "startTime": 22,
                             "startValue": 36,
-                            "slope": 20
+                            "slope": 1.2
 			},
 			"period3": {
                             "startTime": 42,
                             "startValue": 60,
-                            "slope": 30
+                            "slope": 1.8
 			}
                     }
 		}
