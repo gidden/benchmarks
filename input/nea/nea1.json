@@ -38,7 +38,7 @@
 		"coreLoading": ["float", "tHM", ["nea_pwr_uox"]],
 		"burnup": ["float", "GWd/tHM", ["nea_pwr_uox"]],
 		"storageTime": ["int", "year", ["nea_pwr_uox"]],
-		"coolingTime": ["int", "year", ["nea_pwr_uox"]],
+		"coolingTime": ["int", "year", ["nea_pwr_uox"]]
 	    },
 	    "constraints": [
 		["thermalPower", 4.412],
@@ -58,12 +58,12 @@
 	"repository": {
 	    "metadata": {
 		"type":"repository"
-	    }
-	    "attributes": {}
+	    },
+	    "attributes": {},
 	    "constraints": [],
 	    "inputs": ["nea_spent_pwr_uox"]
 	}
-    }
+    },
     "fuelCycle": {
 	"attributes": {
             "grid": "year",
@@ -74,7 +74,7 @@
             "demands": {
 		"power": ["GWe", ["lwr_reactor"]]
             }
-	}
+	},
 	"constraints": {
             "grid": [0, 120],
             "demands": {
