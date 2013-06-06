@@ -1,0 +1,159 @@
+{
+    "materials": {
+	"lwr_used_fuel": {"attributes": {"recipe": false}, 
+			  "constraints": [], 
+			  "metadata": {"suggestedComposition": [["U235", 156.729], ["U236", 102.103], ["U238", 18280.324], ["NP237", 13.656], ["PU238", 5.043], ["PU239", 106.343], ["PU240", 41.357], ["PU241", 36.477], ["PU242", 15.387], ["AM241", 1.234], ["AM243", 3.607], ["CM244", 0.431], ["CM245", 1.263]]}
+			 }, 
+	"lwr_fuel": {"attributes": {"recipe": true}, 
+		     "constraints": [["U235", 4.0], ["U238", 96.0]], 
+		     "metadata": {}
+		    }, 
+	"hwr_used_fuel": {"attributes": {"recipe": false}, 
+			  "constraints": [], 
+			  "metadata": {"suggestedComposition": [["U235", 330.478], ["U236", 98.944], ["U238", 137171.079], ["NP237", 3.604], ["PU238", 0.459], ["PU239", 369.87], ["PU240", 133.16], ["PU241", 25.227], ["PU242", 5.468], ["AM241", 0.195], ["AM243", 0.167], ["CM244", 0.07], ["CM245", 0.014]]}
+			 }, 
+	"natl_u": {"attributes": {"recipe": true}, 
+		   "constraints": [["U235", 0.711], ["U238", 99.289]], 
+		   "metadata": {}
+		  }
+    },
+    "facilities": {
+	"enrichment_fab": {
+	    "metadata": {
+		"type":"enrichment"
+	    },
+	    "attributes": {"tailsFraction": ["float", "weight percent"]},
+	    "constraints": [["tailsFraction", 0.3]],
+	    "inputs": ["natl_u"],
+	    "outputs": ["lwr_fuel"]
+	},
+	"lwr_reactor": {
+	    "metadata": {"type": "reactor"},
+	    "attributes": {
+		"thermalPower": ["float", "GWt"],
+		"efficiency": ["float", "percent"],
+		"cycleLength": ["int", "EFPD"],
+		"capacityFactor": ["float", "percent"],
+		"lifetime": ["int", "year"],
+		"fuels": ["lwr_fuel"],
+		"batches": ["int", "", ["lwr_fuel"]],
+		"coreLoading": ["float", "tHM", ["lwr_fuel"]],
+		"burnup": ["float", "GWd/tHM", ["lwr_fuel"]],
+		"storageTime": ["int", "year", ["lwr_fuel"]],
+		"coolingTime": ["int", "year", ["lwr_fuel"]]
+	    },
+	    "constraints": [
+		["thermalPower", 3.0303],
+		["efficiency", 33.0],
+		["cycleLength", 292],
+		["capacityFactor", 80.0],
+		["lifetime", 40],
+		["batches", 4, "lwr_fuel"],
+		["coreLoading", 78.71, "lwr_fuel"],
+		["burnup", 45, "lwr_fuel"],
+		["storageTime", 0, "lwr_fuel"],
+		["coolingTime", 6, "lwr_fuel"]
+	    ],
+	    "inputs": ["lwr_fuel"],
+	    "outputs": ["lwr_used_fuel"]
+	},
+	"hwr_reactor": {
+	    "metadata": {"type": "reactor"},
+	    "attributes": {
+		"thermalPower": ["float", "GWt"],
+		"efficiency": ["float", "percent"],
+		"cycleLength": ["int", "EFPD"],
+		"capacityFactor": ["float", "percent"],
+		"lifetime": ["int", "year"],
+		"fuels": ["natl_u"],
+		"batches": ["int", "", ["natl_u"]],
+		"coreLoading": ["float", "tHM", ["natl_u"]],
+		"burnup": ["float", "GWd/tHM", ["natl_u"]],
+		"storageTime": ["int", "year", ["natl_u"]],
+		"coolingTime": ["int", "year", ["natl_u"]]
+	    },
+	    "constraints": [
+		["thermalPower", 2.0],
+		["efficiency", 30.0],
+		["cycleLength", 292],
+		["capacityFactor", 80.0],
+		["lifetime", 40],
+		["batches", 1, "natl_u"],
+		["coreLoading", 139.1, "natl_u"],
+		["burnup", 7, "natl_u"],
+		["storageTime", 0, "natl_u"],
+		["coolingTime", 6, "natl_u"]
+	    ],
+	    "inputs": ["natl_u"],
+	    "outputs": ["hwr_used_fuel"]
+	},
+	"repository": {
+	    "metadata": {
+		"type":"repository"
+	    },
+	    "attributes": {},
+	    "constraints": [],
+	    "inputs": ["lwr_used_fuel", "hwr_used_fuel"]
+	}
+    },
+    "fuelCycle": {
+	"attributes": {
+	    "grid": "year",
+	    "initialConditions": {
+		"enrichment_fab": 1,
+		"repository": 1
+	    },
+            "demands": {
+		"lwr_reactor_power": ["GWe", ["lwr_reactor"]],
+		"hwr_reactor_power": ["GWe", ["hwr_reactor"]]
+            }
+	},
+	"constraints": {
+            "grid": [0, 92],
+            "demands": {
+		"lwr_reactor_power": {
+                    "grid": [0, 92],
+                    "growth": {
+			"type": "linear",
+			"period1": {
+                            "startTime": 0,
+                            "startValue": 349.68,
+                            "slope": 9.742
+			},
+			"period2": {
+                            "startTime": 22,
+                            "startValue": 564,
+                            "slope": 18.8
+			},
+			"period3": {
+                            "startTime": 42,
+                            "startValue": 940,
+                            "slope": 28.2
+			}
+		    }
+		},
+		"hwr_reactor_power": {
+                    "grid": [0, 92],
+                    "growth": {
+			"type": "linear",
+			"period1": {
+                            "startTime": 0,
+                            "startValue": 22.32,
+                            "slope": 0.622
+			},
+			"period2": {
+                            "startTime": 22,
+                            "startValue": 36,
+                            "slope": 1.2
+			},
+			"period3": {
+                            "startTime": 42,
+                            "startValue": 60,
+                            "slope": 1.8
+			}
+                    }
+		}
+            }
+	}
+    }
+}
