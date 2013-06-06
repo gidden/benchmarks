@@ -46,7 +46,7 @@ def test_cycle_length():
     assert_equal(obs, expected)
 
     cf = 80
-    upval = (expected * 365 / 12) / (cf / 100.0)
+    upval = (expected * 365 / 12) * (cf / 100.0)
     descr3 = CycleDescription("EFPD", upval, "percent", cf)
     obs = ft.getCycleLength(descr3.attrs(), descr3.constrs())
     assert_equal(obs, expected)
