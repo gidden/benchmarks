@@ -152,7 +152,9 @@ class JsonFuelCycleParser(object):
         that commodity
         """
         params = self.__description["attributes"]["demands"]
-        producers = {key: value[1] for key, value in params.iteritems()}
+        producers = {}
+        for key, value in params.iteritems():
+            producers[key] = value[1] 
         return producers
 
     def parse(self):
