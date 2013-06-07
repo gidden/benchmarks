@@ -5,9 +5,12 @@ sys.path.append("../src")
 
 import fac_translate as ft
 import input_compiler as ic
+import compare_xml_trees as cxt
+from lxml import etree
+from copy import deepcopy
 
 # test packages
-from nose.tools import assert_equal, assert_raises, eq_, raises
+from nose.tools import assert_equal, assert_raises, eq_, raises, assert_true, assert_false
 from sets import Set
 # ------------------------------------------------------------------------------
 
@@ -80,3 +83,15 @@ def test_source_commods():
     exp = Set(["a"])
     obs = ic.getSourceCommods(imports, exports)
     assert_equal(obs, exp)
+
+def test_compare():
+    obs = etree.Element("root")
+    extra = etree.SubElement(obs, "thing")
+    exp = deepcopy(obs)
+    extra2 = etree.SubElement(obs, "thing")
+    assert_false(cxt.compare_nodes(obs, exp))
+    
+    obs = etree.parse("input/obs.xml").getroot()
+    exp = etree.parse("input/exp.xml").getroot()
+    
+    assert_false(cxt.compare_nodes(obs, exp))

@@ -1,0 +1,68 @@
+
+<simulation>
+
+  <region>
+    <name>region</name>
+    <model>
+      <GrowthRegion>
+        <commodity>
+          <name>lwr_reactor_power</name>
+          <demand>
+            <type>linear</type>
+            <parameters>811.83 349680.0</parameters>
+            <start_time>0</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>1566.67 0.0</parameters>
+            <start_time>264</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>2350.00 0.0</parameters>
+            <start_time>504</start_time>
+          </demand>
+        </commodity>
+        <commodity>
+          <name>hwr_reactor_power</name>
+          <demand>
+            <type>linear</type>
+            <parameters>51.83 22320.0</parameters>
+            <start_time>0</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>100.00 0.0</parameters>
+            <start_time>264</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>150.00 0.0</parameters>
+            <start_time>504</start_time>
+          </demand>
+        </commodity>
+      </GrowthRegion>
+    </model>
+    <institution>
+      <name>institution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>source_natl_u</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>enrichment_fab</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>repository</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <model>
+        <ManagerInst/>
+      </model>
+    </institution>
+  </region>
+
+</simulation>
