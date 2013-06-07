@@ -62,3 +62,12 @@ def test_inpro_translation():
     #print etree.tostring(tree.getroot(), pretty_print = True)
     assert_true(compare_nodes(xlator.translate(), tree.getroot(), log = False))
     
+def test_nea_translation():
+    json_data = open("input/nea1.json")
+    data = json.load(json_data)
+    xlator = CyclusTranslator(data)
+    tree = etree.parse("input/nea1.xml")
+    print etree.tostring(xlator.translate(), pretty_print = True)
+    print etree.tostring(tree.getroot(), pretty_print = True)
+    assert_true(compare_nodes(xlator.translate(), tree.getroot(), log = False))
+    
