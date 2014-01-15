@@ -483,8 +483,8 @@ Examples Provided
 
 In the `input` directory, the following benchmarks are provided:
 
-  * INPRO Once-Through ([JACOBSON09]_)
-  * NEA Scenario 1 ([BOUCHER07]_)
+* INPRO Once-Through ([JACOBSON09]_)
+* NEA Scenario 1 ([BOUCHER07]_)
 
 Citations
 ---------
