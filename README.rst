@@ -470,12 +470,31 @@ below::
      }
  }
 
+Running Tests
+-------------
+
+Tests for this repository can be run using nosetests, i.e.,::
+ 
+  cd tests
+  nosetests
+
+Examples Provided
+-----------------
+
+In the `input` directory, the following benchmarks are provided:
+
+  * INPRO Once-Through ([JACOBSON09]_)
+  * NEA Scenario 1 ([BOUCHER07]_)
+
 Citations
 ---------
 
 .. [BOUCHER07] L. BOUCHER, “Specification for the Benchmark Devoted to Scenario
 	       Codes,” Tech. Rep. NEA/NSC/DOC(2007)13/REV1, OECD, Nuclear Energy
 	       Agency (Mar. 2008).
+
+.. [JACOBSON09] J. J. JACOBSON ET AL., VISION User Guide - VISION (Verifiable
+                Fuel Cycle Simulation) Model, Idaho National Lab (2009).
 
 .. [MATTOON12] C. M. MATTOON, B. R. BECK, N. R. PATEL, N. C. SUM-
 	       MERS, G. W. HEDSTROM, and D. A. BROWN, “Gener- alized Nuclear
